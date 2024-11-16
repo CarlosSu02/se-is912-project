@@ -14,7 +14,9 @@ class SystemTrayIcon(QSystemTrayIcon):
         menu.addAction(exitAction)
         self.setContextMenu(menu)
 
-        self.activated.connect(lambda reason: print(reason))
+        self.activated.connect(
+            lambda reason: print(reason == QSystemTrayIcon.ActivationReason.Trigger)
+        )
 
     def exit(self):
         print("exit!")

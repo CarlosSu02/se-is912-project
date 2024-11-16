@@ -1,10 +1,12 @@
 import sys
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QObject, Qt
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
+    QMenu,
     QPushButton,
+    QSystemTrayIcon,
     QVBoxLayout,
     QWidget,
 )
@@ -74,6 +76,36 @@ class AnotherWindow(QWidget):
         self.fn.w = None
 
 
+class SystemTrayIcon(QSystemTrayIcon):
+    def __init__(self, icon: QIcon, parent: QWidget | None = None):
+        if parent is None or not isinstance(parent, QWidget):
+            return
+        # print("instance", isinstance(parent, QWidget))
+
+        super().__init__(icon, parent)
+
+        # self.parent: QObject = parent
+
+        menu = QMenu(parent)
+        exitAction = QAction(parent=menu, text="Exit")
+        exitAction.triggered.connect(self.exit)
+
+        menu.addAction(exitAction)
+        self.setContextMenu(menu)
+
+        self.activated.connect(
+            lambda reason: print(reason == QSystemTrayIcon.ActivationReason.Trigger)
+        )
+
+        # if isinstance(self.parent, QWidget):
+        #     print(self.parent.isHidden())
+
+    def exit(self):
+        print("exit!")
+        # self.exit()
+        QApplication.quit()
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -89,8 +121,9 @@ class Window(QWidget):
 
         # Windows flags
         self.setWindowFlags(
-            Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint
-            # | Qt.WindowType.Tool
+            Qt.WindowType.WindowStaysOnTopHint
+            | Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.Tool
         )
 
         # Window opacity
@@ -147,6 +180,7 @@ class Window(QWidget):
         self.main_layout.addLayout(self.sec_layout)
 
     def functions(self):
+        # button ss
         ss = QPushButton(self)
 
         ss.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -154,16 +188,19 @@ class Window(QWidget):
 
         ss.clicked.connect(take_ss)
 
+        # button_new_window
         button_new_window = QPushButton("+", self)
 
         button_new_window.setCursor(Qt.CursorShape.PointingHandCursor)
         button_new_window.clicked.connect(self.new_window)
 
+        # button_tts
         button_tts = QPushButton("🔈", self)
 
         button_tts.setCursor(Qt.CursorShape.PointingHandCursor)
         button_tts.clicked.connect(tts)
 
+        # button_close
         button_close = QPushButton(self)
 
         button_close.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -192,7 +229,9 @@ class Window(QWidget):
 
         return self.functions()
 
+    # NOTE: with trayicon this closing does not work, it only minimizes the app.
     def close_window(self):
+        # self.close()
         self.close()
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
@@ -235,7 +274,15 @@ class Window(QWidget):
             self.w.close()
             self.w = None
 
+    # def closeEvent(self, event):
+    #     event.ignore()  # Prevent the window from actually closing
+    #     self.hide()  # Hide the window when the close button is pressed
+    #     tray_icon.showMessage("App Hidden", "Click the tray icon to restore the app.")
+
 
 # TODO: search QSystemTrayIcon
 app = QApplication(sys.argv)
 window = Window()
+
+tray_icon = SystemTrayIcon(QIcon("./icons/ds.ico"), window)
+tray_icon.show()
