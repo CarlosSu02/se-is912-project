@@ -78,8 +78,8 @@ class AnotherWindow(QWidget):
 
 class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, icon: QIcon, parent: QWidget | None = None):
-        if parent is None or not isinstance(parent, QWidget):
-            return
+        # if parent is None or not isinstance(parent, QWidget):
+        #     return
         # print("instance", isinstance(parent, QWidget))
 
         super().__init__(icon, parent)
@@ -94,7 +94,8 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.setContextMenu(menu)
 
         self.activated.connect(
-            lambda reason: print(reason == QSystemTrayIcon.ActivationReason.Trigger)
+            # lambda reason: print(reason == QSystemTrayIcon.ActivationReason.Trigger)
+            self.handle_window
         )
 
         # if isinstance(self.parent, QWidget):
@@ -104,6 +105,25 @@ class SystemTrayIcon(QSystemTrayIcon):
         print("exit!")
         # self.exit()
         QApplication.quit()
+
+    # parent
+    def handle_window(self, reason):
+        widget = self.parent()
+        if reason != QSystemTrayIcon.ActivationReason.Trigger or not isinstance(
+            widget, QWidget
+        ):
+            return
+
+        # if not isinstance(widget, QWidget):
+        #     print("show or hide?", widget.isHidden())
+
+        # print("show or hide?", widget.isHidden())
+
+        if not widget.isHidden():
+            return widget.close()
+
+        widget.show()
+        widget.raise_()
 
 
 class Window(QWidget):
@@ -280,7 +300,7 @@ class Window(QWidget):
     #     tray_icon.showMessage("App Hidden", "Click the tray icon to restore the app.")
 
 
-# TODO: search QSystemTrayIcon
+# TODO: order code.
 app = QApplication(sys.argv)
 window = Window()
 
