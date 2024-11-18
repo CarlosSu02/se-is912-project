@@ -2,3 +2,4 @@ PyQt6==6.7.1
 pyautogui==0.9.54
 pillow==10.4.0
 pyttsx3==2.98
+pyqt-toast-notification==1.3.2
