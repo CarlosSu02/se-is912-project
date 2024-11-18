@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
 )
 
 from package.helpers.tts import tts
+from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 
 
@@ -72,8 +73,9 @@ class AnotherWindow(QWidget):
 
     def closeEvent(self, event):
         print("close!")
-        self.close()
+        # self.close()
         self.fn.w = None
+        event.accept()
 
 
 class SystemTrayIcon(QSystemTrayIcon):
@@ -201,33 +203,43 @@ class Window(QWidget):
 
     def functions(self):
         # button ss
-        ss = QPushButton(self)
+        # ss = QPushButton(self)
 
-        ss.setCursor(Qt.CursorShape.PointingHandCursor)
-        ss.setIcon(QIcon("./icons/screenshot.svg"))
+        # ss.setCursor(Qt.CursorShape.PointingHandCursor)
+        # ss.setIcon(QIcon("./icons/screenshot.svg"))
+        #
+        # ss.clicked.connect(take_ss)
 
-        ss.clicked.connect(take_ss)
+        ss = CustomQPButton(icon="./icons/screenshot.svg", on_click=take_ss)
 
         # button_new_window
-        button_new_window = QPushButton("+", self)
+        # button_new_window = QPushButton("+", self)
+        #
+        # button_new_window.setCursor(Qt.CursorShape.PointingHandCursor)
+        # button_new_window.clicked.connect(self.new_window)
 
-        button_new_window.setCursor(Qt.CursorShape.PointingHandCursor)
-        button_new_window.clicked.connect(self.new_window)
+        button_new_window = CustomQPButton(
+            text="+", cursor=Qt.CursorShape.PointingHandCursor, on_click=self.new_window
+        )
 
         # button_tts
-        button_tts = QPushButton("🔈", self)
+        # button_tts = QPushButton("🔈", self)
+        #
+        # button_tts.setCursor(Qt.CursorShape.PointingHandCursor)
+        # button_tts.clicked.connect(tts)
 
-        button_tts.setCursor(Qt.CursorShape.PointingHandCursor)
-        button_tts.clicked.connect(tts)
+        button_tts = CustomQPButton(text="🔈", on_click=tts)
 
         # button_close
-        button_close = QPushButton(self)
+        # button_close = QPushButton(self)
 
-        button_close.setCursor(Qt.CursorShape.PointingHandCursor)
-        button_close.setIcon(QIcon("./icons/close.svg"))
+        # button_close.setCursor(Qt.CursorShape.PointingHandCursor)
+        # button_close.setIcon(QIcon("./icons/close.svg"))
+
+        # button_close.clicked.connect(self.close)
+
+        button_close = CustomQPButton(icon="./icons/close.svg", on_click=self.close)
         button_close.setProperty("class", "close")
-
-        button_close.clicked.connect(self.close)
 
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
@@ -284,6 +296,12 @@ class Window(QWidget):
 
         self.setFixedHeight(new_h)
         self.bgwidget.setFixedHeight(new_h)
+        # tray_icon.showMessage("?", "?", QSystemTrayIcon.MessageIcon.Critical)
+        # tray_icon.showMessage(
+        #     "App Updated",
+        #     "Your window height has been updated!",
+        #     QSystemTrayIcon.MessageIcon.Information,
+        # )
 
     def new_window(self):
         if self.w is None:
@@ -302,6 +320,9 @@ class Window(QWidget):
 
 # TODO: order code.
 app = QApplication(sys.argv)
+app.setQuitOnLastWindowClosed(
+    False
+)  # Evita que la aplicación termine al cerrar la última ventana
 window = Window()
 
 tray_icon = SystemTrayIcon(QIcon("./icons/ds.ico"), window)
