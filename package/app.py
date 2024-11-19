@@ -1,4 +1,3 @@
-import base64
 import sys
 import os
 from PyQt6.QtCore import Qt
@@ -8,13 +7,11 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QLabel,
     QMenu,
-    QMessageBox,
     QPushButton,
     QSystemTrayIcon,
     QVBoxLayout,
     QWidget,
 )
-from qtpy.QtCore import QFile
 
 from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
@@ -46,20 +43,6 @@ basic_qss = f"""
 BG_TRANSPARENT = "background-color: rgba(0, 0, 0, 0.5)"
 
 
-class AnotherWindow1(QWidget):
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
-
-        self.initUI()
-
-    def initUI(self):
-        layout = QVBoxLayout(self)
-
-        self.setLayout(layout)
-
-
 class AnotherWindow(QWidget):
     """
     This "window" is a QWidget. If it has no parent, it
@@ -87,13 +70,7 @@ class AnotherWindow(QWidget):
 
 class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, icon: QIcon, parent: QWidget | None = None):
-        # if parent is None or not isinstance(parent, QWidget):
-        #     return
-        # print("instance", isinstance(parent, QWidget))
-
         super().__init__(icon, parent)
-
-        # self.parent: QObject = parent
 
         menu = QMenu(parent)
         exitAction = QAction(parent=menu, text="Exit")
@@ -107,9 +84,6 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.handle_window
         )
 
-        # if isinstance(self.parent, QWidget):
-        #     print(self.parent.isHidden())
-
     def exit(self):
         print("exit!")
         # self.exit()
@@ -122,11 +96,6 @@ class SystemTrayIcon(QSystemTrayIcon):
             widget, QWidget
         ):
             return
-
-        # if not isinstance(widget, QWidget):
-        #     print("show or hide?", widget.isHidden())
-
-        # print("show or hide?", widget.isHidden())
 
         if not widget.isHidden():
             return widget.close()
@@ -196,7 +165,6 @@ class Window(QWidget):
 
     def init_content(self):
         button_show = QPushButton(self)
-        # button_show.setText("show")
 
         button_show.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -239,10 +207,8 @@ class Window(QWidget):
         self.update_height()
 
     def handle_sec_layout(self):
-        # print(self.sec_layout.count())
         count = self.sec_layout.count()
 
-        # self.clean_layout(self.sec_layout) if count != 0 else self.functions()
         if count != 0:
             return self.clean_layout(self.sec_layout)
 
@@ -250,7 +216,6 @@ class Window(QWidget):
 
     # NOTE: with trayicon this closing does not work, it only minimizes the app.
     def close_window(self):
-        # self.close()
         self.close()
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
@@ -269,26 +234,12 @@ class Window(QWidget):
         elements = self.sec_layout
         count = elements.count()
 
-        # if count == 0:
-        #     return
-
-        # one = elements.itemAt(0).widget()
-
-        # if one:
-        #     print(one.widget().height())
-
         spacing = elements.spacing()
 
         new_h = ((VALUE_WH + spacing) * count) + WINDOW_SIZE_WH
 
         self.setFixedHeight(new_h)
         self.bgwidget.setFixedHeight(new_h)
-        # tray_icon.showMessage("?", "?", QSystemTrayIcon.MessageIcon.Critical)
-        # tray_icon.showMessage(
-        #     "App Updated",
-        #     "Your window height has been updated!",
-        #     QSystemTrayIcon.MessageIcon.Information,
-        # )
 
     def new_window(self):
         if self.w is None:
@@ -307,22 +258,9 @@ class Window(QWidget):
         if not fileName:
             return
 
-        # print(fileName)
-        # QMessageBox.information(
-        #     self, "Unable to open file", f'There was an error opening "{fileName}"'
-        # )
-
         try:
-            # in_file = open(str(fileName), "rb")
-            # print(in_file)
-            print(os.path.splitext(fileName)[1])
-
             file_name = os.path.basename(fileName)
             toasts().info(file_name)
-
-            # with open(fileName, "rb") as in_file:
-            #     file_content = in_file.read()
-            # print(file_content)
 
             base64 = encode_to_base64(fileName)
 
@@ -331,8 +269,6 @@ class Window(QWidget):
         except Exception as e:
             toasts().error(str(e))
             return
-
-        # in_file.close()
 
     # def closeEvent(self, event):
     #     event.ignore()  # Prevent the window from actually closing

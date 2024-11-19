@@ -22,7 +22,6 @@ def open_file(path=None, mode="r", content=None):
                 file.write(content)
                 return
 
-            # print("Content", file.read())
             return file.read()
 
     except Exception as e:
@@ -41,7 +40,6 @@ def encode_to_base64(fileName):
 
     base64_bytes = base64.standard_b64encode(file_content)
     base64_string = base64_bytes.decode("utf-8")
-    # return f"data:image/png;base64,{base64_string}"
 
     url = f"data:{extensions[file_extension]};base64,{base64_string}"
 
