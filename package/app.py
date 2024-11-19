@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtCore import QObject, Qt
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
@@ -203,41 +203,17 @@ class Window(QWidget):
 
     def functions(self):
         # button ss
-        # ss = QPushButton(self)
-
-        # ss.setCursor(Qt.CursorShape.PointingHandCursor)
-        # ss.setIcon(QIcon("./icons/screenshot.svg"))
-        #
-        # ss.clicked.connect(take_ss)
-
         ss = CustomQPButton(icon="./icons/screenshot.svg", on_click=take_ss)
 
         # button_new_window
-        # button_new_window = QPushButton("+", self)
-        #
-        # button_new_window.setCursor(Qt.CursorShape.PointingHandCursor)
-        # button_new_window.clicked.connect(self.new_window)
-
         button_new_window = CustomQPButton(
             text="+", cursor=Qt.CursorShape.PointingHandCursor, on_click=self.new_window
         )
 
         # button_tts
-        # button_tts = QPushButton("🔈", self)
-        #
-        # button_tts.setCursor(Qt.CursorShape.PointingHandCursor)
-        # button_tts.clicked.connect(tts)
-
         button_tts = CustomQPButton(text="🔈", on_click=tts)
 
         # button_close
-        # button_close = QPushButton(self)
-
-        # button_close.setCursor(Qt.CursorShape.PointingHandCursor)
-        # button_close.setIcon(QIcon("./icons/close.svg"))
-
-        # button_close.clicked.connect(self.close)
-
         button_close = CustomQPButton(icon="./icons/close.svg", on_click=self.close)
         button_close.setProperty("class", "close")
 
