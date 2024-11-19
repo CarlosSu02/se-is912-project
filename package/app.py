@@ -1,19 +1,26 @@
+import base64
 import sys
+import os
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
+    QFileDialog,
     QLabel,
     QMenu,
+    QMessageBox,
     QPushButton,
     QSystemTrayIcon,
     QVBoxLayout,
     QWidget,
 )
+from qtpy.QtCore import QFile
 
 from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
+from package.ui.toast_manager import toasts
+from package.utils.files import encode_to_base64
 
 
 # from package.helpers.screenshot import take_ss
@@ -217,10 +224,14 @@ class Window(QWidget):
         button_close = CustomQPButton(icon="./icons/close.svg", on_click=self.close)
         button_close.setProperty("class", "close")
 
+        # button_file_imgs
+        button_file_imgs = CustomQPButton(text="img", on_click=self.load_from_file)
+
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
         self.sec_layout.addWidget(button_new_window)
         self.sec_layout.addWidget(button_tts)
+        self.sec_layout.addWidget(button_file_imgs)
         self.sec_layout.addWidget(button_close)
 
         self.main_layout.addStretch()
@@ -287,6 +298,41 @@ class Window(QWidget):
         else:
             self.w.close()
             self.w = None
+
+    def load_from_file(self):
+        fileName, _ = QFileDialog.getOpenFileName(
+            self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
+        )
+
+        if not fileName:
+            return
+
+        # print(fileName)
+        # QMessageBox.information(
+        #     self, "Unable to open file", f'There was an error opening "{fileName}"'
+        # )
+
+        try:
+            # in_file = open(str(fileName), "rb")
+            # print(in_file)
+            print(os.path.splitext(fileName)[1])
+
+            file_name = os.path.basename(fileName)
+            toasts().info(file_name)
+
+            # with open(fileName, "rb") as in_file:
+            #     file_content = in_file.read()
+            # print(file_content)
+
+            base64 = encode_to_base64(fileName)
+
+            print(base64)
+
+        except Exception as e:
+            toasts().error(str(e))
+            return
+
+        # in_file.close()
 
     # def closeEvent(self, event):
     #     event.ignore()  # Prevent the window from actually closing

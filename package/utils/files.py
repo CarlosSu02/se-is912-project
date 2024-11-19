@@ -1,3 +1,14 @@
+import os
+import base64
+
+extensions = {
+    ".ico": "image/x-icon",
+    ".jpg": "image/jpg",
+    ".png": "image/png",
+    ".bmp": "image/bmp",
+}
+
+
 def open_file(path=None, mode="r", content=None):
     try:
         if path is None:
@@ -16,4 +27,22 @@ def open_file(path=None, mode="r", content=None):
 
     except Exception as e:
         print("Error: ", e)
-        return f"Error: {e}"
+        # return f"Error: {e}"
+        return
+
+
+def encode_to_base64(fileName):
+    file_content = open_file(fileName, mode="rb")
+
+    if file_content is None:
+        return
+
+    file_extension = os.path.splitext(fileName)[1]
+
+    base64_bytes = base64.standard_b64encode(file_content)
+    base64_string = base64_bytes.decode("utf-8")
+    # return f"data:image/png;base64,{base64_string}"
+
+    url = f"data:{extensions[file_extension]};base64,{base64_string}"
+
+    return url
