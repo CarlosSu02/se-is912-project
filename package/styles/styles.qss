@@ -1,23 +1,26 @@
-QPushButton { 
-  color: #FFF;
-  background-color: #858580;
-  border-radius: 20px;
-  width: 40;
-  height: 40;
+QPushButton {
+    color: #FFF;
+    background-color: #858580;
+    border-radius: 20px;
+    width: 40px;
+    height: 40px;
 }
 
 QPushButton:hover {
-  background-color: #757575;
+    background-color: #757575;
 }
 
-.close {
-  background-color: #FF5050;
+QPushButton.widget {
+    border: solid #000063;
+    border-width: 3px 3px;
+    background-color: #d4d4d4;
 }
 
-.close:hover {
-  background-color: #FF6060;
+QPushButton.close {
+    background-color: #FF5050;
 }
 
-
-
+QPushButton.close:hover {
+    background-color: #FF6060;
+}
 

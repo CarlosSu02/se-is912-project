@@ -1,4 +1,5 @@
 import os
+import json
 import base64
 
 extensions = {
@@ -44,3 +45,87 @@ def encode_to_base64(fileName):
     url = f"data:{extensions[file_extension]};base64,{base64_string}"
 
     return url
+
+
+class HandleJson:
+    def __init__(self, path: str = "settings.json") -> None:
+        self.path = path
+
+        self.data = self.file("r")
+
+    def file(self, mode: str = "r"):
+        try:
+            with open(self.path, mode) as file:
+                if mode == "w":
+                    return json.dump(self.data, file, indent=4)
+
+                data = json.load(file)
+
+            return data
+        except Exception as e:
+            print(e)
+            return {}
+
+    # NOTE: para no generar confusión con "w" en cada llamada a self.file
+    def update_file(self):
+        return self.file("w")
+
+    def get_value(self, key: str = "path_ss"):
+        try:
+            # if key in self.data is False:
+            if not self.__exists_key(key):
+                raise KeyError(f"La clave { key } no se encuentra en el json.")
+
+            # print(self.data[key])
+
+            return self.data[key]
+
+        except Exception as e:
+            print(e)
+
+            return str(e)
+
+    def add_property(self, key: str, value: str):
+        try:
+            self.data[key] = value
+            self.update_file()
+
+            # with open(self.path, "w") as file:
+            #     json.dump(self.data, file, indent=4)
+            # json.dump(self.data.pop(key, None), file, indent=4)
+
+        except KeyError as e:
+            print(e)
+
+    def update_property(self, key: str, new_value: str):
+        try:
+            if not self.__exists_key(key):
+                print("prop not exists")
+                return
+
+            self.data[key] = new_value
+            self.update_file()
+
+        except KeyError as e:
+            print(e)
+
+        # with open(self.path, "w") as file:
+        #     json.dump(self.data, file, indent=4)
+
+    def delete_property(self, key: str):
+        try:
+            del self.data[key]
+            self.update_file()
+
+            # with open(self.path, "w") as file:
+            #     json.dump(self.data, file, indent=4)
+            # json.dump(self.data.pop(key, None), file, indent=4)
+
+        except KeyError as e:
+            print(e)
+
+    def __exists_key(self, key: str):
+        return key in self.data
+
+
+settings = HandleJson("./config/settings.json")

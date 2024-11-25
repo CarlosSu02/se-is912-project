@@ -17,7 +17,7 @@ from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
-from package.utils.files import encode_to_base64
+from package.utils.files import encode_to_base64, settings
 
 
 # from package.helpers.screenshot import take_ss
@@ -169,11 +169,18 @@ class Window(QWidget):
         button_show.setCursor(Qt.CursorShape.PointingHandCursor)
 
         button_show.clicked.connect(self.handle_sec_layout)
+        button_show.setProperty("class", "widget")
+        button_show.setFixedSize(40, 40)
 
         self.main_layout.addWidget(button_show)
 
         # Secondary layout
         self.sec_layout = QVBoxLayout()
+        self.sec_layout.setSpacing(10)  # Espaciado entre widgets
+        self.sec_layout.setContentsMargins(
+            0, 0, 0, 0
+        )  # Márgenes entre widgets y layout
+
         self.main_layout.addLayout(self.sec_layout)
 
     def functions(self):
