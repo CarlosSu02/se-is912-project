@@ -196,7 +196,9 @@ class Window(QWidget):
         button_tts = CustomQPButton(text="🔈", on_click=tts)
 
         # button_close
-        button_close = CustomQPButton(icon="./icons/close.svg", on_click=self.close)
+        button_close = CustomQPButton(
+            icon="./icons/close.svg", on_click=self.close_window
+        )
         button_close.setProperty("class", "close")
 
         # button_file_imgs
@@ -223,6 +225,7 @@ class Window(QWidget):
 
     # NOTE: with trayicon this closing does not work, it only minimizes the app.
     def close_window(self):
+        self.handle_sec_layout()
         self.close()
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
