@@ -19,7 +19,7 @@ def open_file(path=None, mode="r", content=None):
         if mode == "w" and content is None:
             raise Exception("The content is invalid!")
 
-        with open(path, mode, encoding="utf-8") as file:
+        with open(path, mode) as file:
             if mode == "w":
                 file.write(content)
                 return
