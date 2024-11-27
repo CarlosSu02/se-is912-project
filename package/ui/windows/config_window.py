@@ -2,7 +2,7 @@ import typing
 from random import randint
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent, QFont, QPixmap
-from PyQt6.QtWidgets import QComboBox, QLabel, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QComboBox, QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from package.utils.files import HandleJson, config_path
 
@@ -24,8 +24,11 @@ class ConfigWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.resize(250, 100)
+        # self.resize(250, 100)
+        self.setFixedSize(250, 100)
         self.setWindowTitle("Configuración")
+
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
 
         self.prompts()
 
@@ -55,9 +58,11 @@ class ConfigWindow(QWidget):
         combobox = QComboBox()
         combobox.addItems(prompts.data.keys())
         combobox.setFont(QFont("Arial", 12))
-        combobox.setFixedSize(self.width(), 30)
+        # combobox.setFixedSize(self.width(), 30)
         # combobox.resize(combobox.sizeHint())
         # combobox.move(90, 50)
+        combobox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        combobox.setMinimumHeight(30)
 
         combobox.setCurrentIndex(self.items_combobox.index(self.default_prompt))
 
