@@ -1,7 +1,9 @@
+from enum import Enum
 import sys
 import os
+import typing
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QCloseEvent, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -17,6 +19,7 @@ from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
+from package.ui.windows.config_window import ConfigWindow
 from package.utils.files import encode_to_base64, settings
 
 
@@ -49,23 +52,29 @@ class AnotherWindow(QWidget):
     will appear as a free-floating window as we want.
     """
 
-    def __init__(self, fn):
+    def __init__(self, parent, window_key):
         super().__init__()
         layout = QVBoxLayout()
         self.label = QLabel("Another Window % d" % randint(0, 100))
         layout.addWidget(self.label)
         self.setLayout(layout)
         # self.ui.closeButton.clicked.connect(text)
-        self.fn = fn
+        self.parent = parent
+        self.window_key = window_key
 
     def text(self):
         print("press!")
 
-    def closeEvent(self, event):
+    def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         print("close!")
         # self.close()
-        self.fn.w = None
-        event.accept()
+
+        if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
+            return
+
+        self.parent.handle_windows(self.window_key)
+
+        return super().closeEvent(a0)
 
 
 class SystemTrayIcon(QSystemTrayIcon):
@@ -104,7 +113,15 @@ class SystemTrayIcon(QSystemTrayIcon):
         widget.raise_()
 
 
-class Window(QWidget):
+# Para listar las ventanas disponibles
+class Window(Enum):
+    CONFIG = "config"
+    OTHER = "other"
+
+
+class MainWindow(QWidget):
+    __windows_list = {Window.CONFIG: ConfigWindow, Window.OTHER: AnotherWindow}
+
     def __init__(self):
         super().__init__()
 
@@ -144,7 +161,7 @@ class Window(QWidget):
         # )
         self.setStyleSheet(get_stylesheet())
 
-        self.w = None
+        self.windows = {}
         self.show()
 
     def topRightOffset(self):
@@ -187,11 +204,6 @@ class Window(QWidget):
         # button ss
         ss = CustomQPButton(icon="./icons/screenshot.svg", on_click=take_ss)
 
-        # button_new_window
-        button_new_window = CustomQPButton(
-            text="+", cursor=Qt.CursorShape.PointingHandCursor, on_click=self.new_window
-        )
-
         # button_tts
         button_tts = CustomQPButton(text="🔈", on_click=tts)
 
@@ -204,11 +216,26 @@ class Window(QWidget):
         # button_file_imgs
         button_file_imgs = CustomQPButton(text="img", on_click=self.load_from_file)
 
+        # button_config
+        button_config = CustomQPButton(
+            text="c",
+            cursor=Qt.CursorShape.PointingHandCursor,
+            on_click=lambda: self.handle_windows(Window.CONFIG),
+        )
+
+        # button_other
+        button_other = CustomQPButton(
+            text="o",
+            cursor=Qt.CursorShape.PointingHandCursor,
+            on_click=lambda: self.handle_windows(Window.OTHER),
+        )
+
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
-        self.sec_layout.addWidget(button_new_window)
         self.sec_layout.addWidget(button_tts)
         self.sec_layout.addWidget(button_file_imgs)
+        self.sec_layout.addWidget(button_config)
+        self.sec_layout.addWidget(button_other)
         self.sec_layout.addWidget(button_close)
 
         self.main_layout.addStretch()
@@ -226,7 +253,8 @@ class Window(QWidget):
     # NOTE: with trayicon this closing does not work, it only minimizes the app.
     def close_window(self):
         self.handle_sec_layout()
-        self.close()
+        # self.close()
+        QApplication.exit()
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
         if layout is None:
@@ -251,14 +279,20 @@ class Window(QWidget):
         self.setFixedHeight(new_h)
         self.bgwidget.setFixedHeight(new_h)
 
-    def new_window(self):
-        if self.w is None:
-            self.w = AnotherWindow(self)
-            self.w.show()
+    def handle_windows(self, window_key):
+        # print(self.__windows_list)
+        # print(self.windows)
+
+        window = window_key in self.windows
+
+        if not window:
+            # self.w = AnotherWindow(self)
+            self.windows[window_key] = self.__windows_list[window_key](self, window_key)
+            self.windows[window_key].show()
 
         else:
-            self.w.close()
-            self.w = None
+            # self.windows[window_key].close()
+            del self.windows[window_key]
 
     def load_from_file(self):
         fileName, _ = QFileDialog.getOpenFileName(
@@ -291,7 +325,7 @@ app = QApplication(sys.argv)
 app.setQuitOnLastWindowClosed(
     False
 )  # Evita que la aplicación termine al cerrar la última ventana
-window = Window()
+window = MainWindow()
 
 tray_icon = SystemTrayIcon(QIcon("./icons/ds.ico"), window)
 tray_icon.show()

@@ -2,6 +2,7 @@ import os
 import json
 import base64
 
+config_path = "./config/settings.json"
 extensions = {
     ".ico": "image/x-icon",
     ".jpg": "image/jpg",
@@ -18,7 +19,7 @@ def open_file(path=None, mode="r", content=None):
         if mode == "w" and content is None:
             raise Exception("The content is invalid!")
 
-        with open(path, mode) as file:
+        with open(path, mode, encoding="utf-8") as file:
             if mode == "w":
                 file.write(content)
                 return
@@ -55,7 +56,7 @@ class HandleJson:
 
     def file(self, mode: str = "r"):
         try:
-            with open(self.path, mode) as file:
+            with open(self.path, mode, encoding="utf-8") as file:
                 if mode == "w":
                     return json.dump(self.data, file, indent=4)
 
@@ -128,4 +129,4 @@ class HandleJson:
         return key in self.data
 
 
-settings = HandleJson("./config/settings.json")
+settings = HandleJson(config_path)
