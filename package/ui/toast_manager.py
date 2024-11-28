@@ -18,6 +18,12 @@ class ToastManager(Toast):
         self.applyPreset(ToastPreset.INFORMATION)
         self.show()
 
+    def success(self, content):
+        self.setTitle("Confirmación")
+        self.setText(str(content))
+        self.applyPreset(ToastPreset.SUCCESS)
+        self.show()
+
 
 # FIX: handle errors.
 def toasts():

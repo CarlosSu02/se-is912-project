@@ -1,3 +1,9 @@
-.close {
-  
+QPushButton.cancel {
+    background-color: #FF5050;
 }
+
+QPushButton.cancel:hover {
+    background-color: #FF6060;
+}
+
+

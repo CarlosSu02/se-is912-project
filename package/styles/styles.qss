@@ -10,6 +10,14 @@ QPushButton:hover {
     background-color: #757575;
 }
 
+/*
+QWidget#main-layout QPushButton {
+    border-radius: 20px;
+    width: 40px;
+    height: 40px;
+}
+*/
+
 QPushButton.widget {
     border: solid #FF5555;
     border-width: 3px 3px;
@@ -22,5 +30,19 @@ QPushButton.close {
 
 QPushButton.close:hover {
     background-color: #FF6060;
+}
+
+QPushButton.save {
+    background-color: green;
+}
+
+QPushButton.save:hover {
+    background-color: blue;
+}
+
+
+QPushButton.not-rounded {
+    width: 75px;
+    border-radius: 5px;
 }
 

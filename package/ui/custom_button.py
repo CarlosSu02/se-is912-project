@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor, QIcon
-from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtWidgets import QPushButton, QSizePolicy
 
 
 class CustomQPButton(QPushButton):
@@ -15,3 +15,6 @@ class CustomQPButton(QPushButton):
         self.setText(text) if icon is None else self.setIcon(QIcon(icon))
         self.setCursor(cursor)
         self.clicked.connect(on_click)
+
+        # NOTE: check this!
+        # self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)

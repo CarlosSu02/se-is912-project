@@ -58,11 +58,11 @@ class HandleJson:
         try:
             with open(self.path, mode, encoding="utf-8") as file:
                 if mode == "w":
-                    return json.dump(self.data, file, indent=4)
+                    return json.dump(self.data, file, indent=4, ensure_ascii=False)
 
                 data = json.load(file)
 
-            return data
+            return dict(data)
         except Exception as e:
             print(e)
             return {}
@@ -106,6 +106,8 @@ class HandleJson:
 
             self.data[key] = new_value
             self.update_file()
+
+            return True
 
         except KeyError as e:
             print(e)

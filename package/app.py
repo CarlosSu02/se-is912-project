@@ -146,6 +146,7 @@ class MainWindow(QWidget):
 
         self.bgwidget = QWidget(self)
         # self.bgwidget.setStyleSheet("background-color: rgba(0, 0, 0, 0.5);")
+        self.bgwidget.setObjectName("main-layout")
 
         self.bgwidget.setFixedWidth(60)
         self.bgwidget.setFixedHeight(60)
