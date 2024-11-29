@@ -22,6 +22,7 @@ class ToastManager(Toast):
         self.setTitle("Confirmación")
         self.setText(str(content))
         self.applyPreset(ToastPreset.SUCCESS)
+        # self.setFixedHeight(100)
         self.show()
 
 

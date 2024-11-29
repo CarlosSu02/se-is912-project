@@ -20,6 +20,7 @@ from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
+from package.ui.windows.question_window import QuestionWindow
 from package.utils.files import encode_to_base64, settings
 
 
@@ -117,10 +118,15 @@ class SystemTrayIcon(QSystemTrayIcon):
 class Window(Enum):
     CONFIG = "config"
     OTHER = "other"
+    QUESTION = "question"
 
 
 class MainWindow(QWidget):
-    __windows_list = {Window.CONFIG: ConfigWindow, Window.OTHER: AnotherWindow}
+    __windows_list = {
+        Window.CONFIG: ConfigWindow,
+        Window.OTHER: AnotherWindow,
+        Window.QUESTION: QuestionWindow,
+    }
 
     def __init__(self):
         super().__init__()
@@ -231,12 +237,19 @@ class MainWindow(QWidget):
             on_click=lambda: self.handle_windows(Window.OTHER),
         )
 
+        # button_question
+        button_question = CustomQPButton(
+            text="q",
+            on_click=lambda: self.handle_windows(Window.QUESTION),
+        )
+
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
         self.sec_layout.addWidget(button_tts)
         self.sec_layout.addWidget(button_file_imgs)
-        self.sec_layout.addWidget(button_config)
-        self.sec_layout.addWidget(button_other)
+        # self.sec_layout.addWidget(button_config)
+        # self.sec_layout.addWidget(button_other)
+        self.sec_layout.addWidget(button_question)
         self.sec_layout.addWidget(button_close)
 
         self.main_layout.addStretch()
