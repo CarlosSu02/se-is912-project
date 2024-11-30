@@ -157,6 +157,7 @@ class MainWindow(QWidget):
 
         self.bgwidget.setFixedWidth(60)
         self.bgwidget.setFixedHeight(60)
+        self.bgwidget.setObjectName("bgwidget")
 
         self.main_layout = QVBoxLayout(self.bgwidget)
 
@@ -189,11 +190,16 @@ class MainWindow(QWidget):
         self.move(x, y)
 
     def init_content(self):
-        button_show = QPushButton(self)
+        # button_show = QPushButton(self)
 
-        button_show.setCursor(Qt.CursorShape.PointingHandCursor)
+        # button_show.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        button_show.clicked.connect(self.handle_sec_layout)
+        # button_show.clicked.connect(self.handle_sec_layout)
+
+        button_show = CustomQPButton(
+            icon="./icons/widget.svg", on_click=self.handle_sec_layout
+        )
+
         button_show.setProperty("class", "widget")
         button_show.setFixedSize(40, 40)
 
@@ -256,6 +262,10 @@ class MainWindow(QWidget):
             on_click=lambda: self.handle_windows(Window.QUESTION),
         )
 
+        button_update = CustomQPButton(
+            text="up", on_click=lambda: self.setStyleSheet(get_stylesheet())
+        )
+
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
         # self.sec_layout.addWidget(button_tts)
@@ -265,6 +275,7 @@ class MainWindow(QWidget):
         # self.sec_layout.addWidget(button_other)
         self.sec_layout.addWidget(button_question)
         self.sec_layout.addWidget(button_close)
+        # self.sec_layout.addWidget(button_update)
 
         self.main_layout.addStretch()
 
