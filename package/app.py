@@ -1,3 +1,4 @@
+import base64
 from enum import Enum
 import sys
 import os
@@ -221,7 +222,18 @@ class MainWindow(QWidget):
         button_close.setProperty("class", "close")
 
         # button_file_imgs
-        button_file_imgs = CustomQPButton(text="img", on_click=self.load_from_file)
+        button_file_imgs = CustomQPButton(
+            icon="./icons/file-image.svg",
+            text="img",
+            on_click=self.load_imgs_from_files,
+        )
+
+        # button_file
+        button_file = CustomQPButton(
+            icon="./icons/file-pdf.svg",
+            text="files",
+            on_click=self.load_docs_from_files,
+        )
 
         # button_config
         button_config = CustomQPButton(
@@ -239,14 +251,16 @@ class MainWindow(QWidget):
 
         # button_question
         button_question = CustomQPButton(
+            icon="./icons/user-question-alt.svg",
             text="q",
             on_click=lambda: self.handle_windows(Window.QUESTION),
         )
 
         ## Add to Secondary layout
         self.sec_layout.addWidget(ss)
-        self.sec_layout.addWidget(button_tts)
+        # self.sec_layout.addWidget(button_tts)
         self.sec_layout.addWidget(button_file_imgs)
+        self.sec_layout.addWidget(button_file)
         # self.sec_layout.addWidget(button_config)
         # self.sec_layout.addWidget(button_other)
         self.sec_layout.addWidget(button_question)
@@ -308,11 +322,31 @@ class MainWindow(QWidget):
             # self.windows[window_key].close()
             del self.windows[window_key]
 
-    def load_from_file(self):
+    def load_imgs_from_files(self):
         fileName, _ = QFileDialog.getOpenFileName(
             self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
         )
 
+        file_base64 = self.__handle_load_file(fileName)
+
+        if file_base64 is None:
+            return
+
+        return file_base64
+
+    def load_docs_from_files(self):
+        fileName, _ = QFileDialog.getOpenFileName(
+            self, "Archivo", "", "Archivos de documentos (*.pdf)"
+        )
+
+        file_base64 = self.__handle_load_file(fileName)
+
+        if file_base64 is None:
+            return
+
+        return file_base64
+
+    def __handle_load_file(self, fileName):
         if not fileName:
             return
 
@@ -322,7 +356,7 @@ class MainWindow(QWidget):
 
             base64 = encode_to_base64(fileName)
 
-            print(base64)
+            return base64
 
         except Exception as e:
             toasts().error(str(e))

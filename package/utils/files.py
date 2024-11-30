@@ -8,6 +8,7 @@ extensions = {
     ".jpg": "image/jpg",
     ".png": "image/png",
     ".bmp": "image/bmp",
+    ".pdf": "application/pdf",
 }
 
 
@@ -43,7 +44,7 @@ def encode_to_base64(fileName):
     base64_bytes = base64.standard_b64encode(file_content)
     base64_string = base64_bytes.decode("utf-8")
 
-    url = f"data:{extensions[file_extension]};base64,{base64_string}"
+    url = f"data:{ extensions[file_extension] };base64,{ base64_string }"
 
     return url
 

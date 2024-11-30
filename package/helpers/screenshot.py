@@ -1,6 +1,8 @@
 # import pyautogui as pg # if not use wsl, uncomment this line.
 
 # from package.utils.date import current_datetime
+import base64
+from io import BytesIO
 import os
 from sys import exception
 from package.utils.date import current_datetime
@@ -17,12 +19,25 @@ def take_ss(e):
         path_ss = settings.get_value("path_ss")
 
         ss = pg.screenshot()
-        path = f"{path_ss}/Screenshot {current_datetime()}.png"
+        # path = f"{path_ss}/Screenshot {current_datetime()}.png"
+        #
+        # if not folder_exists(path_ss):
+        #     os.makedirs(path_ss)
+        #
+        # ss.save(path)
 
-        if not folder_exists(path_ss):
-            os.makedirs(path_ss)
+        output = BytesIO()
+        ss.save(output, format="PNG")
 
-        ss.save(path)
+        ss_data = output.getvalue()
+        ss_base64 = base64.standard_b64encode(ss_data).decode("utf-8")
+
+        url = f"data:image/png;base64,{ ss_base64 }"
+
+        # with open("./ss.txt", "w") as f:
+        #     f.write(url)
+
+        return url
 
     except Exception as e:
         print(f"Error: { e }")
