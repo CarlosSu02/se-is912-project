@@ -1,4 +1,7 @@
 import base64
+
+from dotenv import load_dotenv
+
 from enum import Enum
 import sys
 import os
@@ -15,12 +18,14 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from dotenv.main import DotEnv
 
 from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
+from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.utils.files import encode_to_base64, settings
 
@@ -120,6 +125,7 @@ class Window(Enum):
     CONFIG = "config"
     OTHER = "other"
     QUESTION = "question"
+    DOTENV = "dotenv"
 
 
 class MainWindow(QWidget):
@@ -127,6 +133,7 @@ class MainWindow(QWidget):
         Window.CONFIG: ConfigWindow,
         Window.OTHER: AnotherWindow,
         Window.QUESTION: QuestionWindow,
+        Window.DOTENV: Ui_DotEnvWindow,
     }
 
     def __init__(self):
@@ -162,6 +169,7 @@ class MainWindow(QWidget):
         self.main_layout = QVBoxLayout(self.bgwidget)
 
         self.init_content()
+        self.functions()
 
         # open_file(
         #     "./package/styles/styles.qss",
@@ -266,7 +274,11 @@ class MainWindow(QWidget):
             text="up", on_click=lambda: self.setStyleSheet(get_stylesheet())
         )
 
-        ## Add to Secondary layout
+        button_key = CustomQPButton(
+            text="key", on_click=lambda: self.handle_windows(Window.DOTENV)
+        )
+
+        # Add to Secondary layout
         self.sec_layout.addWidget(ss)
         # self.sec_layout.addWidget(button_tts)
         self.sec_layout.addWidget(button_file_imgs)
@@ -274,8 +286,9 @@ class MainWindow(QWidget):
         # self.sec_layout.addWidget(button_config)
         # self.sec_layout.addWidget(button_other)
         self.sec_layout.addWidget(button_question)
+        self.sec_layout.addWidget(button_key)
         self.sec_layout.addWidget(button_close)
-        # self.sec_layout.addWidget(button_update)
+        self.sec_layout.addWidget(button_update)
 
         self.main_layout.addStretch()
 
@@ -289,11 +302,10 @@ class MainWindow(QWidget):
 
         return self.functions()
 
-    # NOTE: with trayicon this closing does not work, it only minimizes the app.
     def close_window(self):
         self.handle_sec_layout()
         # self.close()
-        QApplication.exit()
+        QApplication.exit()  # NOTE: <- temporally
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
         if layout is None:
