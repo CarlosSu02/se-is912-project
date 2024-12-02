@@ -92,7 +92,7 @@ class QuestionWindow(QWidget):
             QComboBox {
                 padding-left: 10px;  /* Space inside the combo box */
             }
-        """
+            """
         )
         combobox.setCursor(Qt.CursorShape.PointingHandCursor)
         view = combobox.view()

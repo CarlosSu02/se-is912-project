@@ -21,9 +21,12 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 from PyQt6.QtGui import QCloseEvent
+from PyQt6.QtCore import Qt
 
 
+from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
+from package.utils.handle_dotenv import exists_dotenv, clients, set_env, validate_key
 
 
 class Ui_DotEnvWindow(QWidget):
@@ -36,14 +39,19 @@ class Ui_DotEnvWindow(QWidget):
         self.setStyleSheet(get_stylesheet())
         self.setupUi(self)
 
+    def dotenv(self):
+        return exists_dotenv()
+
     def setupUi(self, DotEnvWindow):
         DotEnvWindow.setObjectName("DotEnvWindow")
         DotEnvWindow.resize(500, 774)
 
+        DotEnvWindow.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+
         # self.retranslateUi(DotEnvWindow)
         # self.set_key(self)
 
-        exists_env = load_dotenv()
+        exists_env = self.dotenv()
 
         # self.update_height()
         print(exists_env)
@@ -221,7 +229,7 @@ class Ui_DotEnvWindow(QWidget):
         self.button_delete_key.setEnabled(True)
         self.button_delete_key.setMinimumSize(QtCore.QSize(40, 40))
         self.button_delete_key.setCursor(
-            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            QtGui.QCursor(Qt.CursorShape.PointingHandCursor)
         )
         # self.button_delete_key.setStyleSheet("height: 32px;")
         self.button_delete_key.setText("")
@@ -262,15 +270,15 @@ class Ui_DotEnvWindow(QWidget):
         # Crear el botón "close"
         self.button_close = QPushButton("Cerrar", parent=self.sec_widget)
         self.button_close.setMinimumSize(QtCore.QSize(80, 40))  # Tamaño mínimo
+        self.button_close.clicked.connect(self.close)
         self.button_close.setCursor(
             QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
         )
         self.close_button_layout.addWidget(self.button_close)
 
         # Añadir el layout horizontal (con el botón alineado a la derecha) al layout vertical principal
-        self.sec_layout.addLayout(
-            self.close_button_layout
-        )  # self.sec_layout.addWidget(self.button_close)
+        self.sec_layout.addLayout(self.close_button_layout)
+        # self.sec_layout.addWidget(self.button_close)
 
         self.sec_widget.setFixedHeight(self.sec_widget.height())
         self.update_height(self.sec_widget)
@@ -295,6 +303,22 @@ class Ui_DotEnvWindow(QWidget):
         self.combobox = QComboBox(parent=self.verticalLayoutWidget)
         self.combobox.setObjectName("combobox")
 
+        ## add items
+        items_combobox = list(clients.keys())
+        self.combobox.addItems(items_combobox)
+
+        self.combobox.setStyleSheet(
+            """
+            QComboBox {
+                padding-left: 10px;  /* Space inside the combo box */
+            }
+            """
+        )
+        self.combobox.setCursor(Qt.CursorShape.PointingHandCursor)
+        view = self.combobox.view()
+        if view:
+            view.setCursor(Qt.CursorShape.PointingHandCursor)
+
         self.main_layout.addWidget(self.combobox)
 
         self.label_key_textarea = QLabel(
@@ -312,10 +336,13 @@ class Ui_DotEnvWindow(QWidget):
         self.key_textarea.setMaximumSize(QtCore.QSize(16777215, 100))
         self.key_textarea.setObjectName("key_textarea")
 
+        self.key_textarea.textChanged.connect(self.handle_text_changed)
+
         self.main_layout.addWidget(self.key_textarea)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 20, 0, 0)
 
         spacerItem = QSpacerItem(
             40,
@@ -326,14 +353,20 @@ class Ui_DotEnvWindow(QWidget):
 
         self.horizontalLayout.addItem(spacerItem)
 
-        self.button_add = QPushButton("Agregar", parent=self.verticalLayoutWidget)
-        self.button_add.setObjectName("button_add")
+        # self.button_add = QPushButton("Agregar", parent=self.verticalLayoutWidget)
+        # self.button_add.setObjectName("button_add")
+
+        self.button_add = CustomQPButton("Agregar", on_click=self.handle_add_env)
         self.button_add.setProperty("class", "qa-save not-rounded")
+        self.button_add.setEnabled(False)
 
         self.horizontalLayout.addWidget(self.button_add)
 
-        self.button_cancel = QPushButton("Cancelar", parent=self.verticalLayoutWidget)
-        self.button_cancel.setObjectName("button_cancel")
+        # self.button_cancel = QPushButton("Cancelar", parent=self.verticalLayoutWidget)
+        # self.button_cancel.setObjectName("button_cancel")
+        # self.button_cancel.clicked.connect(self.close)
+
+        self.button_cancel = CustomQPButton(text="Cancelar", on_click=self.close)
         self.button_cancel.setProperty("class", "qa-cancel not-rounded")
 
         self.horizontalLayout.addWidget(self.button_cancel)
@@ -352,7 +385,26 @@ class Ui_DotEnvWindow(QWidget):
         print(widget.height())
         self.setFixedWidth(widget.width() + 40)
         self.setFixedHeight(widget.height() + 30)
-        pass
+
+        return
+
+    def handle_text_changed(self):
+        value = self.key_textarea.toPlainText().strip()
+
+        # condition = len(value) < 10
+
+        # if len(value) < 10:
+        #     return
+
+        condition = bool(validate_key(value))
+
+        self.button_add.setEnabled(condition)
+
+    def handle_add_env(self):
+        key = clients[self.combobox.currentText().strip()]
+        value = self.key_textarea.toPlainText().strip()
+
+        set_env(key, value)
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):

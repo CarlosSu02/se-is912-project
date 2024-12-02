@@ -23,7 +23,7 @@ def open_file(path=None, mode="r", content=None):
         with open(path, mode) as file:
             if mode == "w":
                 file.write(content)
-                return
+                return True
 
             return file.read()
 
