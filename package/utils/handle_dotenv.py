@@ -2,14 +2,35 @@ import os
 import re
 from dotenv import load_dotenv, dotenv_values
 
+from package.constants.various import clients
 from package.utils.files import open_file
 
 
-clients = {
-    "Claude": "API_KEY_CLAUDE",
-    # "ChatGPT": "API_KEY_CHATGPT",
-    # "Gemini": "API_KEY_GEMINI",
-}
+# clients = {
+#     "Claude": "API_KEY_CLAUDE",
+#     # "ChatGPT": "API_KEY_CHATGPT",
+#     # "Gemini": "API_KEY_GEMINI",
+# }
+
+""" 
+# Alternativa para no repetir codigo
+from enum import Enum
+
+class Clients(Enum):
+    Claude = "API_KEY_CLAUDE"
+    ChatGPT = "chatgpt"
+
+clients = { c.name: c.value for c in Clients }
+
+print(list(Clients))
+print(clients)
+
+class Clients2(Enum):
+    CLAUDE = 'Claude', 'key'
+    CHATGPT = "chatgpt", 'name'
+
+print({ list(t.value)[0]: list(t.value)[1] for t in Clients2 })
+"""
 
 regex = r"^sk-[a-zA-Z0-9_-]{32,}$"
 

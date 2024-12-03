@@ -7,10 +7,6 @@ API_KEY_CLAUDE = get_env(clients["Claude"])
 MODEL_SONNET = "claude-3-5-sonnet-20241022"
 MODEL_OPUS = "claude-3-opus-20240229"
 
-# client = Anthropic(api_key=API_KEY_CLAUDE)
-
-# print(client)
-
 
 def get_client():
     return Anthropic(api_key=API_KEY_CLAUDE)

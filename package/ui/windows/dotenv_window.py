@@ -29,12 +29,12 @@ from package.ui.styles import get_stylesheet
 from package.utils.handle_dotenv import (
     delete_key,
     exists_dotenv,
-    clients,
     get_env,
     key_from_value,
     set_env,
     validate_key,
 )
+from package.constants.various import clients
 
 
 class Ui_DotEnvWindow(QWidget):
