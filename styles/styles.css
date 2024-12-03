@@ -60,7 +60,8 @@ QPushButton.save:hover {
 }
 
 QWidget#question-window *,
-#DotEnvWindow * {
+#DotEnvWindow *,
+#custom-dialog * {
   font-family: Arial;
   font-size: 12pt;
   /* font: 12px "Arial"; */

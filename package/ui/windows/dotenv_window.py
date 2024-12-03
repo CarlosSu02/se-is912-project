@@ -66,7 +66,6 @@ class Ui_DotEnvWindow(QWidget):
         exists_env = self.dotenv()
 
         # self.update_height()
-        print(exists_env)
 
         self.set_key(self) if not exists_env else self.get_key(self)
 
@@ -289,6 +288,8 @@ class Ui_DotEnvWindow(QWidget):
         self.button_close.setCursor(
             QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
         )
+        self.button_close.setProperty("class", "qa-cancel not-rounded")
+
         self.close_button_layout.addWidget(self.button_close)
 
         # Añadir el layout horizontal (con el botón alineado a la derecha) al layout vertical principal
@@ -397,7 +398,6 @@ class Ui_DotEnvWindow(QWidget):
         return
 
     def update_height(self, widget):
-        print(widget.height())
         self.setFixedWidth(widget.width() + 40)
         self.setFixedHeight(widget.height() + 30)
 
@@ -434,13 +434,15 @@ class Ui_DotEnvWindow(QWidget):
         self.close()
 
         self.dlg = CustomDialog(
-            content=f"Desea eliminar la API Key de { key }?",
+            content=f"¿Desea eliminar la API Key de { key }?",
             fn_accept=lambda: self.handle_delete_env_conf(key),
         )
-        if self.dlg.exec():
-            print("Success!")
-        else:
-            print("Cancel!")
+        # if self.dlg.exec():
+        #     print("Success!")
+        # else:
+        #     print("Cancel!")
+
+        self.dlg.exec()
 
         # dlg = QDialog(self)
         # dlg.setWindowTitle("HELLO!")

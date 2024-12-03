@@ -275,7 +275,9 @@ class MainWindow(QWidget):
         )
 
         button_key = CustomQPButton(
-            text="key", on_click=lambda: self.handle_windows(Window.DOTENV)
+            icon="./icons/key.svg",
+            text="key",
+            on_click=lambda: self.handle_windows(Window.DOTENV),
         )
 
         # Add to Secondary layout
