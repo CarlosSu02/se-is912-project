@@ -1,4 +1,5 @@
 from io import StringIO
+from math import exp
 import os
 
 from dotenv import load_dotenv, dotenv_values
@@ -28,8 +29,9 @@ def data_env(file=".env"):
     return dotenv_values(file)
 
 
-def get_env(name):
-    return data_env()[name]
+def get_env(name=None):
+    data = data_env()
+    return data[name] if name is not None else list(data)[0]
 
 
 def set_env(key, value):
@@ -39,13 +41,42 @@ def set_env(key, value):
     # config = StringIO(f"{ key }={ value }")
     # load_dotenv(stream=config)
 
-    open_file(path=".env", mode="w", content=f"{ key }={ value }")
+    set = open_file(path=".env", mode="w", content=f"{ key }={ value }")
 
     # The error is handling in open_file function
-    toasts().success("Se agregó la API Key al archivo .env.")
+    # toasts().success("Se agregó la API Key al archivo .env.")
 
-    return
+    return bool(set)
+
+
+def delete_key(key):
+    try:
+        if key is None:
+            return
+
+        open(".env", "w").close()  # lo recrea de nuevo
+
+        return True
+
+    except Exception as e:
+        print(f"Error: { e }")
+        return False
 
 
 def validate_key(value=""):
     return re.match(regex, value, re.MULTILINE)
+
+
+def key_from_value(value):
+    if value is None:
+        return
+
+    keys = list(clients.keys())
+    current_key = None
+
+    for key in keys:
+        if clients[key] == value:
+            current_key = key
+            break
+
+    return current_key

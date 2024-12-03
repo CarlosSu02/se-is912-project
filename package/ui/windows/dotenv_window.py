@@ -9,6 +9,9 @@
 import typing
 from PyQt6 import QtCore, QtGui, QtWidgets
 from dotenv import load_dotenv
+from pyqttoast import toast
+from package.ui.dialogs.custom_dialog import CustomDialog
+from package.ui.toast_manager import toasts
 from qtpy.QtWidgets import (
     QComboBox,
     QHBoxLayout,
@@ -19,14 +22,23 @@ from qtpy.QtWidgets import (
     QSpacerItem,
     QVBoxLayout,
     QWidget,
+    QDialog,
 )
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtBoundSignal
 
 
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.utils.handle_dotenv import exists_dotenv, clients, set_env, validate_key
+from package.utils.handle_dotenv import (
+    delete_key,
+    exists_dotenv,
+    clients,
+    get_env,
+    key_from_value,
+    set_env,
+    validate_key,
+)
 
 
 class Ui_DotEnvWindow(QWidget):
@@ -212,7 +224,9 @@ class Ui_DotEnvWindow(QWidget):
         )  # left, top, right, bottom
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
 
-        self.label_key = QLabel("API Key", parent=self.key_widget)
+        # Title current api key
+        current_api_key = key_from_value(get_env())
+        self.label_key = QLabel(current_api_key, parent=self.key_widget)
         self.label_key.setObjectName("label_key")
 
         self.horizontalLayout_3.addWidget(self.label_key)
@@ -233,6 +247,7 @@ class Ui_DotEnvWindow(QWidget):
         )
         # self.button_delete_key.setStyleSheet("height: 32px;")
         self.button_delete_key.setText("")
+        self.button_delete_key.clicked.connect(self.handle_delete_env)
 
         icon = QtGui.QIcon()
         icon.addPixmap(
@@ -404,7 +419,43 @@ class Ui_DotEnvWindow(QWidget):
         key = clients[self.combobox.currentText().strip()]
         value = self.key_textarea.toPlainText().strip()
 
-        set_env(key, value)
+        save = set_env(key, value)
+
+        if save is None:
+            return toasts().error("Ocurrió un error al guardar la key.")
+
+        # The error is handling in open_file function on set_env
+        toasts().success("Se agregó la API Key al archivo .env.")
+
+        self.close()
+
+    def handle_delete_env(self):
+        key = self.label_key.text()  # solo para obtener el titulo de la actual key
+        self.close()
+
+        self.dlg = CustomDialog(
+            content=f"Desea eliminar la API Key de { key }?",
+            fn_accept=lambda: self.handle_delete_env_conf(key),
+        )
+        if self.dlg.exec():
+            print("Success!")
+        else:
+            print("Cancel!")
+
+        # dlg = QDialog(self)
+        # dlg.setWindowTitle("HELLO!")
+        # dlg.exec()
+
+    def handle_delete_env_conf(self, key):
+        # print(key)
+        delete = delete_key(key)
+
+        self.dlg.close()
+
+        if not delete:
+            return toasts().error("Ocurrió un error al eliminar la API Key.")
+
+        return toasts().success("¡La API Key se eliminó con éxito!")
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
