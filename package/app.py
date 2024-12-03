@@ -209,7 +209,9 @@ class MainWindow(QWidget):
 
     def functions(self):
         # button ss
-        ss = CustomQPButton(icon="./icons/screenshot.svg", on_click=take_ss)
+        ss = CustomQPButton(
+            icon="./icons/screenshot.svg", on_click=self.handle_click_ss
+        )
 
         # button_tts
         button_tts = CustomQPButton(text="🔈", on_click=tts)
@@ -356,6 +358,11 @@ class MainWindow(QWidget):
 
         return file_base64
 
+    def handle_click_ss(self):
+        self.close()  # Close widget before take_ss
+        take_ss(self)
+        self.show()  # Open widget after take_ss
+
     def __handle_load_file(self, fileName):
         if not fileName:
             return
@@ -380,5 +387,5 @@ app.setQuitOnLastWindowClosed(
 )  # Evita que la aplicación termine al cerrar la última ventana
 window = MainWindow()
 
-tray_icon = SystemTrayIcon(QIcon("./icons/ds.ico"), window)
+tray_icon = SystemTrayIcon(QIcon("./icons/widget.ico"), window)
 tray_icon.show()
