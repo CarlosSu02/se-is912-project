@@ -1,11 +1,7 @@
-from io import StringIO
-from math import exp
 import os
-
-from dotenv import load_dotenv, dotenv_values
 import re
+from dotenv import load_dotenv, dotenv_values
 
-from package.ui.toast_manager import toasts
 from package.utils.files import open_file
 
 

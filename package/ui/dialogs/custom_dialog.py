@@ -1,4 +1,3 @@
-from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QDialogButtonBox,
     QLabel,
@@ -33,7 +32,6 @@ class CustomDialog(QDialog):
 
         # Button accepted
         self.buttonBox.accepted.connect(fn_accept)
-        # self.buttonBox.setStyleSheet("background-color: red;")
         self.buttonBox.setStyleSheet("height: 30px;")
         self.buttonBox.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -44,20 +42,12 @@ class CustomDialog(QDialog):
         if ok_button is not None:
             ok_button.setProperty("class", "btn-danger not-rounded")
             ok_button.setText("Borrar")
-            # ok_button.setCursor(Qt.CursorShape.PointingHandCursor)
-        #     ok_button.setStyleSheet(
-        #         "background-color: green; color: white; font-size: 16px; border-radius: 5px;"
-        #     )
 
         # Style the Cancel button
         cancel_button = self.buttonBox.button(QDialogButtonBox.StandardButton.Cancel)
         if cancel_button is not None:
             cancel_button.setProperty("class", "qa-cancel not-rounded")
             cancel_button.setText("Cancelar")
-            # cancel_button.setCursor(Qt.CursorShape.PointingHandCursor)
-        #     cancel_button.setStyleSheet(
-        #         "background-color: red; color: white; font-size: 16px; border-radius: 5px;"
-        #     )
 
         self.buttonBox.rejected.connect(self.reject)
 

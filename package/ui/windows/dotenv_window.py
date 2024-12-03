@@ -7,9 +7,7 @@
 
 
 import typing
-from PyQt6 import QtCore, QtGui, QtWidgets
-from dotenv import load_dotenv
-from pyqttoast import toast
+from PyQt6 import QtCore, QtGui
 from package.ui.dialogs.custom_dialog import CustomDialog
 from package.ui.toast_manager import toasts
 from qtpy.QtWidgets import (
@@ -25,9 +23,7 @@ from qtpy.QtWidgets import (
     QDialog,
 )
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtCore import Qt, pyqtBoundSignal
-
-
+from PyQt6.QtCore import Qt
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.utils.handle_dotenv import (
@@ -60,141 +56,11 @@ class Ui_DotEnvWindow(QWidget):
 
         DotEnvWindow.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
 
-        # self.retranslateUi(DotEnvWindow)
-        # self.set_key(self)
-
         exists_env = self.dotenv()
-
-        # self.update_height()
 
         self.set_key(self) if not exists_env else self.get_key(self)
 
         QtCore.QMetaObject.connectSlotsByName(DotEnvWindow)
-
-    # def retranslateUi(self, DotEnvWindow):
-    #     _translate = QtCore.QCoreApplication.translate
-    #     DotEnvWindow.setWindowTitle(_translate("DotEnvWindow", "Key"))
-    #     self.label_platform.setText(_translate("DotEnvWindow", "Plataforma"))
-    #     self.label.setText(_translate("DotEnvWindow", "Ingrese la clave"))
-    #     self.button_add.setText(_translate("DotEnvWindow", "Agregar"))
-    #     self.button_add.setProperty(
-    #         "class", _translate("DotEnvWindow", "qa-save not-rounded")
-    #     )
-    #     self.button_cancel.setText(_translate("DotEnvWindow", "Cancelar"))
-    #     self.button_cancel.setProperty(
-    #         "class", _translate("DotEnvWindow", "qa-cancel not-rounded")
-    #     )
-    #     self.button_close.setText(_translate("DotEnvWindow", "Cerrar"))
-    #     self.button_close.setProperty(
-    #         "class", _translate("DotEnvWindow", "qa-cancel not-rounded")
-    #     )
-    #     self.label_platform_2.setText(_translate("DotEnvWindow", "Plataforma"))
-    #     self.label_2.setText(
-    #         _translate("DotEnvWindow", "API KEY DE UNA PLATAFORMA??????")
-    #     )
-
-    """
-    def get_key(self, DotEnvWindow):
-        self.sec_widget = QWidget(parent=DotEnvWindow)
-        self.sec_widget.setEnabled(True)
-        self.sec_widget.setGeometry(QtCore.QRect(20, 20, 461, 141))
-        # self.sec_widget.resize(461, 141)
-        self.sec_widget.setObjectName("sec_widget")
-
-        # self.layoutWidget = QWidget(parent=self.sec_widget)
-        # self.layoutWidget.setGeometry(QtCore.QRect(0, 100, 461, 30))
-        # self.layoutWidget.setObjectName("layoutWidget")
-
-        self.sec_layout = QVBoxLayout(self.sec_widget)
-        self.sec_layout.setContentsMargins(0, 0, 0, 0)
-        self.sec_layout.setObjectName("sec_layout")
-
-        # self.horizontalLayout_2 = QHBoxLayout(self.sec_widget)
-        # self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        # self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-
-        # spacerItem1 = QSpacerItem(
-        #     40,
-        #     20,
-        #     QSizePolicy.Policy.Expanding,
-        #     QSizePolicy.Policy.Minimum,
-        # )
-        #
-        # self.horizontalLayout_2.addItem(spacerItem1)
-
-        # Title
-        self.label_platform_key = QLabel("Plataforma", parent=self.sec_widget)
-        self.label_platform_key.setGeometry(QtCore.QRect(0, 0, 459, 30))
-        self.label_platform_key.setMinimumSize(QtCore.QSize(0, 30))
-        # self.label_platform_key.setMaximumSize(QtCore.QSize(16777215, 30))
-        self.label_platform_key.setObjectName("label_platform_key")
-
-        # Widget para el label de key
-        self.key_widget = QWidget(parent=self.sec_widget)
-        self.key_widget.setGeometry(QtCore.QRect(0, 30, 461, 63))
-        # self.key_widget.setStyleSheet("border: 1px solid red;")
-        self.key_widget.setObjectName("key_widget")
-
-        self.horizontalLayout_3 = QHBoxLayout(self.key_widget)
-        self.horizontalLayout_3.setContentsMargins(5, 0, 5, 0)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-
-        self.label_key = QLabel("API Key", parent=self.key_widget)
-        self.label_key.setObjectName("label_key")
-
-        self.horizontalLayout_3.addWidget(self.label_key)
-
-        spacerItem2 = QSpacerItem(
-            40,
-            20,
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Minimum,
-        )
-
-        self.horizontalLayout_3.addItem(spacerItem2)
-
-        self.button_delete_key = QPushButton(parent=self.key_widget)
-        self.button_delete_key.setEnabled(True)
-        self.button_delete_key.setMinimumSize(QtCore.QSize(40, 40))
-        # self.button_delete_key.setMaximumSize(QtCore.QSize(16777215, 16777200))
-        self.button_delete_key.setCursor(
-            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-        )
-
-        self.button_delete_key.setStyleSheet("height: 32px;")
-        self.button_delete_key.setText("")
-
-        icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap("designer/C:/Users/carlossup/.designer/icons/screenshot.svg"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
-
-        self.button_delete_key.setIcon(icon)
-        self.button_delete_key.setObjectName("button_delete_key")
-
-        self.horizontalLayout_3.addWidget(self.button_delete_key)
-
-        # self.button_close = QPushButton(parent=self.sec_widget)
-        # self.button_close.setObjectName("button_close")
-
-        # Botón Close debajo del key_widget
-        self.button_close = QPushButton("Close", parent=self.sec_widget)
-        self.button_close.setMinimumSize(QtCore.QSize(0, 40))
-        self.button_close.setCursor(
-            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-        )
-        self.button_close.setObjectName("button_close")
-
-        self.sec_layout.addWidget(
-            self.button_close
-        )  # self.sec_layout.addWidget(self.button_close)
-
-        self.sec_widget.setFixedHeight(self.sec_widget.height())
-
-        self.update_height(self.sec_widget)
-    """
 
     def get_key(self, DotEnvWindow):
         self.sec_widget = QWidget(parent=DotEnvWindow)
@@ -262,14 +128,6 @@ class Ui_DotEnvWindow(QWidget):
 
         self.sec_layout.addWidget(self.key_widget)
 
-        # Botón Close debajo del key_widget
-        # self.button_close = QPushButton("Close", parent=self.sec_widget)
-        # self.button_close.setMinimumSize(QtCore.QSize(0, 40))
-        # self.button_close.setCursor(
-        #     QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-        # )
-        # self.button_close.setObjectName("button_close")
-
         # Crear un layout horizontal para posicionar el botón "close"
         self.close_button_layout = QHBoxLayout()
         self.close_button_layout.setContentsMargins(0, 0, 0, 0)  # Sin márgenes
@@ -311,7 +169,6 @@ class Ui_DotEnvWindow(QWidget):
 
         self.label_platform = QLabel("Plataforma", parent=self.verticalLayoutWidget)
         self.label_platform.setMinimumSize(QtCore.QSize(0, 30))
-        # self.label_platform.setMaximumSize(QtCore.QSize(16777215, 30))
         self.label_platform.setObjectName("label_platform")
 
         self.main_layout.addWidget(self.label_platform)
@@ -369,18 +226,11 @@ class Ui_DotEnvWindow(QWidget):
 
         self.horizontalLayout.addItem(spacerItem)
 
-        # self.button_add = QPushButton("Agregar", parent=self.verticalLayoutWidget)
-        # self.button_add.setObjectName("button_add")
-
         self.button_add = CustomQPButton("Agregar", on_click=self.handle_add_env)
         self.button_add.setProperty("class", "qa-save not-rounded")
         self.button_add.setEnabled(False)
 
         self.horizontalLayout.addWidget(self.button_add)
-
-        # self.button_cancel = QPushButton("Cancelar", parent=self.verticalLayoutWidget)
-        # self.button_cancel.setObjectName("button_cancel")
-        # self.button_cancel.clicked.connect(self.close)
 
         self.button_cancel = CustomQPButton(text="Cancelar", on_click=self.close)
         self.button_cancel.setProperty("class", "qa-cancel not-rounded")
@@ -388,10 +238,6 @@ class Ui_DotEnvWindow(QWidget):
         self.horizontalLayout.addWidget(self.button_cancel)
 
         self.main_layout.addLayout(self.horizontalLayout)
-        # self.main_layout.setStretch(0, 1)
-        # self.main_layout.setStretch(1, 1)
-        # self.main_layout.setStretch(3, 1)
-        # self.main_layout.setStretch(4, 1)
 
         self.update_height(self.verticalLayoutWidget)
 
@@ -405,11 +251,6 @@ class Ui_DotEnvWindow(QWidget):
 
     def handle_text_changed(self):
         value = self.key_textarea.toPlainText().strip()
-
-        # condition = len(value) < 10
-
-        # if len(value) < 10:
-        #     return
 
         condition = bool(validate_key(value))
 
@@ -437,19 +278,10 @@ class Ui_DotEnvWindow(QWidget):
             content=f"¿Desea eliminar la API Key de { key }?",
             fn_accept=lambda: self.handle_delete_env_conf(key),
         )
-        # if self.dlg.exec():
-        #     print("Success!")
-        # else:
-        #     print("Cancel!")
 
         self.dlg.exec()
 
-        # dlg = QDialog(self)
-        # dlg.setWindowTitle("HELLO!")
-        # dlg.exec()
-
     def handle_delete_env_conf(self, key):
-        # print(key)
         delete = delete_key(key)
 
         self.dlg.close()

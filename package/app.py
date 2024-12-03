@@ -1,11 +1,7 @@
-import base64
-
-from dotenv import load_dotenv
-
-from enum import Enum
 import sys
 import os
 import typing
+from enum import Enum
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QCloseEvent, QIcon
 from PyQt6.QtWidgets import (
@@ -13,13 +9,10 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QLabel,
     QMenu,
-    QPushButton,
     QSystemTrayIcon,
     QVBoxLayout,
     QWidget,
 )
-from dotenv.main import DotEnv
-
 from package.helpers.tts import tts
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
@@ -27,10 +20,7 @@ from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
-from package.utils.files import encode_to_base64, settings
-
-
-# from package.helpers.screenshot import take_ss
+from package.utils.files import encode_to_base64
 from .helpers.screenshot import take_ss
 from random import randint
 
@@ -171,11 +161,6 @@ class MainWindow(QWidget):
         self.init_content()
         self.functions()
 
-        # open_file(
-        #     "./package/styles/styles.qss",
-        #     mode="w",
-        #     content="""QPushButton {color: white; }""",
-        # )
         self.setStyleSheet(get_stylesheet())
 
         self.windows = {}
@@ -386,11 +371,6 @@ class MainWindow(QWidget):
         except Exception as e:
             toasts().error(str(e))
             return
-
-    # def closeEvent(self, event):
-    #     event.ignore()  # Prevent the window from actually closing
-    #     self.hide()  # Hide the window when the close button is pressed
-    #     tray_icon.showMessage("App Hidden", "Click the tray icon to restore the app.")
 
 
 # TODO: order code.

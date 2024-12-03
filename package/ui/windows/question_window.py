@@ -1,18 +1,15 @@
 import typing
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCloseEvent, QFont
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
-    QApplication,
     QComboBox,
     QHBoxLayout,
     QLabel,
     QPlainTextEdit,
-    QPushButton,
     QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
-
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
@@ -44,15 +41,12 @@ class QuestionWindow(QWidget):
         self.textarea()
         self.buttons()
 
-        # self.main_layout.addStretch(0)
-
         self.update_height()
 
         return
 
     def prompts(self):
         prompts = HandleJson("./config/prompts.json")
-        # self.config = HandleJson(config_path)
 
         if prompts.data is None:
             return
@@ -61,31 +55,19 @@ class QuestionWindow(QWidget):
 
         # dict_keys = type(dict[str, str]().keys())
         self.items_combobox: list[str] = list(prompts.data.keys())
-        # self.default_prompt = self.config.get_value("expert")
-
-        # print(len(prompts.data.keys()))
-        # print(list(prompts.data.keys()))
-        # print(", ".join(prompts.data.keys()))
-
-        # label = QLabel(", ".join(prompts.data.keys()))
 
         self.container_prompts = QWidget()
         container_layout = QVBoxLayout(self.container_prompts)
 
         label = QLabel("Experto", self)
         # label.setFont(QFont("Arial", 12))
-        # label.move(20, 50)
 
         combobox = QComboBox()
         combobox.addItems(prompts.data.keys())
         # combobox.setFont(QFont("Arial", 12))
-        # combobox.setFixedSize(self.width(), 30)
-        # combobox.resize(combobox.sizeHint())
-        # combobox.move(90, 50)
+
         combobox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         combobox.setFixedHeight(40)
-
-        # combobox.setCurrentIndex(self.items_combobox.index(self.default_prompt))
 
         combobox.setStyleSheet(
             """
@@ -134,14 +116,8 @@ class QuestionWindow(QWidget):
             label.height() + self.question_area.height() + 10
         )
 
-        # self.container_textarea.setStyleSheet("background-color: red;")
-
         self.container_textarea.setProperty("class", "qa-bg")
         self.main_layout.addWidget(self.container_textarea)
-
-        # self.main_layout.addWidget(self.question_area)
-
-        # self.main_layout.addStretch(0)
 
         return
 
@@ -151,22 +127,7 @@ class QuestionWindow(QWidget):
 
         container_buttons_layout.addStretch()
 
-        # buttons = [
-        #     ("Enviar", "qa-save", self.handle_send),
-        #     ("Cerrar", "qa-close", self.close),
-        # ]
         button_height = 40
-
-        # for name, style_class, fn in buttons:
-        #     print(name, style_class)
-        #     button = CustomQPButton(text=name, on_click=fn)
-        #     # button.setObjectName("not-rounded")
-        #     # button.setProperty("class", "not-rounded")
-        #     # button.setProperty("class", style_class)
-        #     button.setProperty("class", f"{ style_class } not-rounded")
-        #     button.setFixedHeight(button_height)
-        #     # button.setFixedWidth(100)
-        #     container_buttons_layout.addWidget(button)
 
         # button_save
         self.button_save = CustomQPButton(text="Enviar", on_click=self.handle_send)
@@ -178,10 +139,6 @@ class QuestionWindow(QWidget):
 
         container_buttons_layout.addWidget(self.button_save)
         container_buttons_layout.addWidget(button_cancel)
-
-        # self.container_buttons.setFixedHeight(
-        #     button_save.height() + button_cancel.height()
-        # )
 
         container_buttons_layout.setContentsMargins(10, 20, 10, 10)
 
@@ -198,9 +155,6 @@ class QuestionWindow(QWidget):
         value = self.question_area.toPlainText().strip()
 
         condition = len(value) < 10
-
-        # if len(value) < 10:
-        #     return
 
         self.button_save.setEnabled(not condition)
 
