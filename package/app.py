@@ -1,3 +1,5 @@
+import package.helpers.clients.claude
+
 import sys
 import os
 import typing
