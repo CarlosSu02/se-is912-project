@@ -13,6 +13,7 @@ def get_client():
 
 
 def vision_claude(image_media_type, base64_string):
+    return ""
     client = get_client()
 
     max_tokens = 1024
@@ -42,6 +43,7 @@ def vision_claude(image_media_type, base64_string):
 
 
 def documents_claude(base64_string):
+    return ""
     client = Anthropic(
         default_headers={"anthropic-beta": "pdfs-2024-09-25"},
         api_key="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",
@@ -76,6 +78,7 @@ def documents_claude(base64_string):
 
 
 def text_claude(prompt, text):
+    return ""
     client = get_client()
 
     max_tokens = 1024

@@ -20,6 +20,7 @@ from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
+from package.ui.windows.speech_window import Ui_SpeechWindow
 from package.utils.files import encode_to_base64
 from .helpers.screenshot import take_ss
 from random import randint
@@ -116,6 +117,7 @@ class Window(Enum):
     OTHER = "other"
     QUESTION = "question"
     DOTENV = "dotenv"
+    SPEECH = "speech"
 
 
 class MainWindow(QWidget):
@@ -124,6 +126,7 @@ class MainWindow(QWidget):
         Window.OTHER: AnotherWindow,
         Window.QUESTION: QuestionWindow,
         Window.DOTENV: Ui_DotEnvWindow,
+        Window.SPEECH: Ui_SpeechWindow,
     }
 
     def __init__(self):
@@ -362,6 +365,7 @@ class MainWindow(QWidget):
         self.close()  # Close widget before take_ss
         take_ss(self)
         self.show()  # Open widget after take_ss
+        self.handle_windows(Window.SPEECH)
 
     def __handle_load_file(self, fileName):
         if not fileName:
