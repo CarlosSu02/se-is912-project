@@ -13,6 +13,7 @@ def get_client():
 
 
 def vision_claude(image_media_type, base64_string):
+    print(image_media_type)
     return ""
     client = get_client()
 

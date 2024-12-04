@@ -13,15 +13,13 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from package.helpers.tts import tts
+from package.helpers.functions import handle_req_files, handle_req_screeshot
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
-from package.utils.files import encode_to_base64
 from .helpers.screenshot import take_ss
 from random import randint
 
@@ -217,7 +215,7 @@ class MainWindow(QWidget):
         )
 
         # button_tts
-        button_tts = CustomQPButton(text="🔈", on_click=tts)
+        # button_tts = CustomQPButton(text="🔈", on_click=tts)
 
         # button_close
         button_close = CustomQPButton(
@@ -342,46 +340,52 @@ class MainWindow(QWidget):
             self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
         )
 
-        file_base64 = self.__handle_load_file(fileName)
+        # file_base64 = self.__handle_load_file(fileName)
+        #
+        # if file_base64 is None:
+        #     return
+        #
+        # return file_base64
 
-        if file_base64 is None:
-            return
-
-        return file_base64
+        handle_req_files(fileName)
 
     def load_docs_from_files(self):
         fileName, _ = QFileDialog.getOpenFileName(
             self, "Archivo", "", "Archivos de documentos (*.pdf)"
         )
 
-        file_base64 = self.__handle_load_file(fileName)
+        # file_base64 = self.__handle_load_file(fileName)
+        #
+        # if file_base64 is None:
+        #     return
+        #
+        # return file_base64
 
-        if file_base64 is None:
-            return
-
-        return file_base64
+        # handle_req_image(fileName)
+        handle_req_files(fileName)
 
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
-        take_ss(self)
+        # take_ss(self)
+        handle_req_screeshot()
         self.show()  # Open widget after take_ss
         self.handle_windows(Window.SPEECH)
 
-    def __handle_load_file(self, fileName):
-        if not fileName:
-            return
-
-        try:
-            file_name = os.path.basename(fileName)
-            toasts().info(file_name)
-
-            base64 = encode_to_base64(fileName)
-
-            return base64
-
-        except Exception as e:
-            toasts().error(str(e))
-            return
+    # def __handle_load_file(self, fileName):
+    #     if not fileName:
+    #         return
+    #
+    #     try:
+    #         file_name = os.path.basename(fileName)
+    #         toasts().info(file_name)
+    #
+    #         base64 = encode_to_base64(fileName)
+    #
+    #         return base64
+    #
+    #     except Exception as e:
+    #         toasts().error(str(e))
+    #         return
 
 
 # TODO: order code.

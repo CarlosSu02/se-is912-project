@@ -12,7 +12,7 @@ from package.utils.files import settings
 # path_ss = r"./scs"
 
 
-def take_ss(e):
+def take_ss():
     try:
         import pyautogui as pg  # if use wsl, else comment this line. Message terminal => NOTE: You must install tkinter on Linux to use MouseInfo. Run the following: sudo apt-get install python3-tk python3-devuu
 
@@ -37,7 +37,7 @@ def take_ss(e):
         # with open("./ss.txt", "w") as f:
         #     f.write(url)
 
-        return url
+        return {"data": ss_base64, "media_type": "image/png"}
 
     except Exception as e:
         print(f"Error: { e }")

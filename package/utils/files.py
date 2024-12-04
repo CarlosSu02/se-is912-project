@@ -46,7 +46,7 @@ def encode_to_base64(fileName):
 
     url = f"data:{ extensions[file_extension] };base64,{ base64_string }"
 
-    return url
+    return {"media_type": extensions[file_extension], "data": base64_string}
 
 
 class HandleJson:
