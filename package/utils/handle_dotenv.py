@@ -42,11 +42,16 @@ def exists_dotenv():
 
 
 def data_env(file=".env"):
+    exists_dotenv()
     return dotenv_values(file)
 
 
 def get_env(name=None):
     data = data_env()
+
+    if len(data) == 0:
+        return
+
     return data[name] if name is not None else list(data)[0]
 
 
