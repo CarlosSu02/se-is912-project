@@ -20,6 +20,8 @@ from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
+from package.utils.files import encode_to_base64
+from package.utils.handle_dotenv import exists_dotenv
 from .helpers.screenshot import take_ss
 from random import randint
 
@@ -119,6 +121,8 @@ class Window(Enum):
 
 
 class MainWindow(QWidget):
+    __exists_env = exists_dotenv()
+
     __windows_list = {
         Window.CONFIG: ConfigWindow,
         Window.OTHER: AnotherWindow,
@@ -209,13 +213,12 @@ class MainWindow(QWidget):
         self.main_layout.addLayout(self.sec_layout)
 
     def functions(self):
+        enabled = exists_dotenv()
+
         # button ss
         ss = CustomQPButton(
             icon="./icons/screenshot.svg", on_click=self.handle_click_ss
         )
-
-        # button_tts
-        # button_tts = CustomQPButton(text="🔈", on_click=tts)
 
         # button_close
         button_close = CustomQPButton(
@@ -237,20 +240,6 @@ class MainWindow(QWidget):
             on_click=self.load_docs_from_files,
         )
 
-        # button_config
-        button_config = CustomQPButton(
-            text="c",
-            cursor=Qt.CursorShape.PointingHandCursor,
-            on_click=lambda: self.handle_windows(Window.CONFIG),
-        )
-
-        # button_other
-        button_other = CustomQPButton(
-            text="o",
-            cursor=Qt.CursorShape.PointingHandCursor,
-            on_click=lambda: self.handle_windows(Window.OTHER),
-        )
-
         # button_question
         button_question = CustomQPButton(
             icon="./icons/user-question-alt.svg",
@@ -267,14 +256,12 @@ class MainWindow(QWidget):
             text="key",
             on_click=lambda: self.handle_windows(Window.DOTENV),
         )
+        button_question.setProperty("key", "key??")
 
         # Add to Secondary layout
         self.sec_layout.addWidget(ss)
-        # self.sec_layout.addWidget(button_tts)
         self.sec_layout.addWidget(button_file_imgs)
         self.sec_layout.addWidget(button_file)
-        # self.sec_layout.addWidget(button_config)
-        # self.sec_layout.addWidget(button_other)
         self.sec_layout.addWidget(button_question)
         self.sec_layout.addWidget(button_key)
         self.sec_layout.addWidget(button_close)
@@ -283,6 +270,7 @@ class MainWindow(QWidget):
         self.main_layout.addStretch()
 
         self.update_height()
+        self.enabled_items()
 
     def handle_sec_layout(self):
         count = self.sec_layout.count()
@@ -334,6 +322,20 @@ class MainWindow(QWidget):
         else:
             # self.windows[window_key].close()
             del self.windows[window_key]
+
+    def enabled_items(self):
+        if self.sec_layout is None:
+            return
+
+        enabled = exists_dotenv()
+
+        for i in reversed(range(self.sec_layout.count())):
+            layout_item = self.sec_layout.itemAt(i).widget()
+
+            if layout_item:
+                print(layout_item.property("key"))
+                if layout_item.property("key") is not None:
+                    layout_item.setEnabled(enabled)
 
     def load_imgs_from_files(self):
         fileName, _ = QFileDialog.getOpenFileName(

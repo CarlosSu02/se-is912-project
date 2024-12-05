@@ -289,6 +289,8 @@ class Ui_DotEnvWindow(QWidget):
         if not delete:
             return toasts().error("Ocurrió un error al eliminar la API Key.")
 
+        self.parent.enabled_items()
+
         return toasts().success("¡La API Key se eliminó con éxito!")
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
