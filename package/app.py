@@ -1,5 +1,4 @@
 import sys
-import os
 import typing
 from enum import Enum
 from PyQt6.QtCore import Qt
@@ -20,9 +19,7 @@ from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
-from package.utils.files import encode_to_base64
 from package.utils.handle_dotenv import exists_dotenv
-from .helpers.screenshot import take_ss
 from random import randint
 
 VALUE_WH = 40
@@ -213,39 +210,24 @@ class MainWindow(QWidget):
         self.main_layout.addLayout(self.sec_layout)
 
     def functions(self):
-        enabled = exists_dotenv()
+        self.buttons_widget = [
+            ("./icons/screenshot.svg", "", self.handle_click_ss, True),
+            ("./icons/file-image.svg", "", self.load_imgs_from_files, True),
+            ("./icons/file-pdf.svg", "", self.load_docs_from_files, True),
+            (
+                "./icons/user-question-alt.svg",
+                "",
+                lambda: self.handle_windows(Window.QUESTION),
+                True,
+            ),
+        ]
 
-        # button ss
-        ss = CustomQPButton(
-            icon="./icons/screenshot.svg", on_click=self.handle_click_ss
-        )
+        for icon_path, style_class, fn, key_en in self.buttons_widget:
+            button = CustomQPButton(icon=icon_path, on_click=fn)
+            button.setProperty("class", style_class)
+            button.setProperty("key_en", key_en)
 
-        # button_close
-        button_close = CustomQPButton(
-            icon="./icons/close.svg", on_click=self.close_window
-        )
-        button_close.setProperty("class", "close")
-
-        # button_file_imgs
-        button_file_imgs = CustomQPButton(
-            icon="./icons/file-image.svg",
-            text="img",
-            on_click=self.load_imgs_from_files,
-        )
-
-        # button_file
-        button_file = CustomQPButton(
-            icon="./icons/file-pdf.svg",
-            text="files",
-            on_click=self.load_docs_from_files,
-        )
-
-        # button_question
-        button_question = CustomQPButton(
-            icon="./icons/user-question-alt.svg",
-            text="q",
-            on_click=lambda: self.handle_windows(Window.QUESTION),
-        )
+            self.sec_layout.addWidget(button)
 
         button_update = CustomQPButton(
             text="up", on_click=lambda: self.setStyleSheet(get_stylesheet())
@@ -256,13 +238,14 @@ class MainWindow(QWidget):
             text="key",
             on_click=lambda: self.handle_windows(Window.DOTENV),
         )
-        button_question.setProperty("key", "key??")
+
+        # button_close
+        button_close = CustomQPButton(
+            icon="./icons/close.svg", on_click=self.close_window
+        )
+        button_close.setProperty("class", "close")
 
         # Add to Secondary layout
-        self.sec_layout.addWidget(ss)
-        self.sec_layout.addWidget(button_file_imgs)
-        self.sec_layout.addWidget(button_file)
-        self.sec_layout.addWidget(button_question)
         self.sec_layout.addWidget(button_key)
         self.sec_layout.addWidget(button_close)
         self.sec_layout.addWidget(button_update)
@@ -333,21 +316,14 @@ class MainWindow(QWidget):
             layout_item = self.sec_layout.itemAt(i).widget()
 
             if layout_item:
-                print(layout_item.property("key"))
-                if layout_item.property("key") is not None:
+                prop = layout_item.property("key_en")
+                if prop:
                     layout_item.setEnabled(enabled)
 
     def load_imgs_from_files(self):
         fileName, _ = QFileDialog.getOpenFileName(
             self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
         )
-
-        # file_base64 = self.__handle_load_file(fileName)
-        #
-        # if file_base64 is None:
-        #     return
-        #
-        # return file_base64
 
         handle_req_files(fileName)
 
@@ -356,38 +332,16 @@ class MainWindow(QWidget):
             self, "Archivo", "", "Archivos de documentos (*.pdf)"
         )
 
-        # file_base64 = self.__handle_load_file(fileName)
-        #
-        # if file_base64 is None:
-        #     return
-        #
-        # return file_base64
-
         # handle_req_image(fileName)
         handle_req_files(fileName)
 
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
-        # take_ss(self)
+
         handle_req_screeshot()
+
         self.show()  # Open widget after take_ss
         self.handle_windows(Window.SPEECH)
-
-    # def __handle_load_file(self, fileName):
-    #     if not fileName:
-    #         return
-    #
-    #     try:
-    #         file_name = os.path.basename(fileName)
-    #         toasts().info(file_name)
-    #
-    #         base64 = encode_to_base64(fileName)
-    #
-    #         return base64
-    #
-    #     except Exception as e:
-    #         toasts().error(str(e))
-    #         return
 
 
 # TODO: order code.

@@ -268,6 +268,8 @@ class Ui_DotEnvWindow(QWidget):
         # The error is handling in open_file function on set_env
         toasts().success("Se agregó la API Key al archivo .env.")
 
+        self.parent.enabled_items()
+
         self.close()
 
     def handle_delete_env(self):
