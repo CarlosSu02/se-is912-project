@@ -7,15 +7,20 @@
 
 
 import math
+import os.path
+from posixpath import expanduser
+from sys import exception
 import typing
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import QFile, pyqtSlot
+from PyQt6.QtWidgets import QFileDialog
 
 from package.ui.custom_button import CustomQPButton
 from package.ui.toast_manager import toasts
-from package.utils.tts import TTSThread
+from package.utils.docs import convert_md_to_docx, text_to_docx
+from package.utils.tts import TTSThread, text_to_file_audio
 
 
 class Ui_SpeechWindow(QWidget):
@@ -109,7 +114,7 @@ class Ui_SpeechWindow(QWidget):
 
         # Button download
         # self.button_download = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget)
-        self.button_download = CustomQPButton(on_click=lambda: print("download"))
+        self.button_download = CustomQPButton(on_click=self.save_files)
         self.button_download.setMinimumSize(QtCore.QSize(0, 48))
         self.button_download.setStyleSheet(
             "border:none; background-color: transparent;"
@@ -202,6 +207,62 @@ class Ui_SpeechWindow(QWidget):
         Ui_SpeechWindow._tts_active = False
         Ui_SpeechWindow._active_instance = None
 
+    @staticmethod
+    def check_existing_instance():
+        if Ui_SpeechWindow._tts_active and Ui_SpeechWindow._active_instance:
+            instance = Ui_SpeechWindow._active_instance
+            instance.raise_()  # Lleva la ventana existente al frente
+            toasts().info("La ventana de TTS ya está abierta.")
+            return True
+        return False
+
+    def get_dir(self):
+        # fileName
+        # dir = QFileDialog.getExistingDirectory(
+        #     parent=self,
+        #     caption=str("Open Directory"),
+        #     directory=expanduser("~"),
+        #     options=QFileDialog.Option.ShowDirsOnly
+        #     | QFileDialog.Option.DontResolveSymlinks,
+        # )
+
+        dir, _ = QFileDialog.getSaveFileName(
+            parent=self,
+            caption="Guardar Archivo",
+            directory=expanduser("~"),
+            filter="Documento de Word (*.docx)",
+        )
+
+        if not dir:
+            return
+
+        return dir
+
+    def save_files(self):
+        try:
+            if self.tts_thread:
+                self.tts_thread.stop()
+
+            dir = self.get_dir()
+
+            if dir is None:
+                raise Exception("No se seleccionó un directorio.")
+
+            file_name = list(os.path.basename(dir).split("."))
+            file_name.pop()
+            file_name = f"{ os.path.dirname(dir) }/{ ".".join(file_name) }"
+
+            docx = f"{ file_name }.docx"
+            mp4 = f"{ file_name }.mp4"
+
+            text_to_docx(self.text, docx)
+            text_to_file_audio(self.text, mp4)
+
+            self.close()
+
+        except Exception as e:
+            toasts().error(e)
+
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         self.tts_stop()
 
@@ -214,12 +275,3 @@ class Ui_SpeechWindow(QWidget):
         Ui_SpeechWindow._active_instance = None
 
         return super().closeEvent(a0)
-
-    @staticmethod
-    def check_existing_instance():
-        if Ui_SpeechWindow._tts_active and Ui_SpeechWindow._active_instance:
-            instance = Ui_SpeechWindow._active_instance
-            instance.raise_()  # Lleva la ventana existente al frente
-            toasts().info("La ventana de TTS ya está abierta.")
-            return True
-        return False

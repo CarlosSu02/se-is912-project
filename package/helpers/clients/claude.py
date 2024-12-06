@@ -14,7 +14,34 @@ def get_client():
 
 def vision_claude(image_media_type, base64_string):
     print(image_media_type)
-    return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    # return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    return """
+        Basado en el documento presentado, elaboraré un resumen estructurado sobre los Sistemas Expertos:
+
+        DEFINICIÓN Y CONCEPTO
+        - Los sistemas expertos son programas que reproducen el proceso intelectual de expertos humanos en campos específicos.
+        - Son capaces de mejorar la productividad, ahorrar tiempo y dinero, conservar conocimientos valiosos y facilitar su difusión.
+
+        CARACTERÍSTICAS PRINCIPALES
+        1. Base de Conocimiento:
+        - Almacena información especializada y estructurada
+        - Contiene reglas y experiencias de expertos humanos
+
+        2. Motor de Inferencia:
+        - Procesa la información usando reglas predefinidas
+        - Genera conclusiones y recomendaciones
+
+        3. Interfaz de Comunicación:
+        - Permite la interacción entre usuario y sistema
+        - Explica el razonamiento seguido para llegar a conclusiones
+
+        VENTAJAS
+        - Rapidez en procesamiento de información
+        - Disponibilidad permanente
+        - Decisiones más objetivas y consistentes
+        - Conservación del conocimiento experto
+        - Capacidad de manejar información compleja
+    """
 
     client = get_client()
 

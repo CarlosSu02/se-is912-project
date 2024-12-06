@@ -1,4 +1,5 @@
 import pyttsx3
+import time
 from PyQt6.QtCore import QThread, pyqtSignal
 from package.ui.toast_manager import toasts
 
@@ -38,6 +39,14 @@ class TTSThread(QThread):
         super().__init__()
         self.text = text
         self.engine = pyttsx3.init()
+        voices = self.engine.getProperty("voices")
+        # for voice in voices:
+        #     print(
+        #         f"Voice ID: {voice.id} - Name: {voice.name} - Lang: {voice.languages}"
+        #     )
+
+        self.engine.setProperty("voice", voices[2].id)
+
         self._stop_req = False
 
     def run(self):
@@ -85,3 +94,20 @@ class TTSThread(QThread):
             self.engine = None
         except Exception as e:
             self.error.emit(str(e))
+
+
+def text_to_file_audio(content, output_file):
+    try:
+        engine = pyttsx3.init()
+
+        engine.setProperty("voice", engine.getProperty("voices")[2].id)
+
+        engine.save_to_file(content, output_file)
+        engine.runAndWait()
+
+        engine.stop()
+
+    except Exception as e:
+        print(f"Error: { e }")
+
+        toasts().error(e)
