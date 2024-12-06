@@ -10,21 +10,36 @@ import math
 import typing
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QWidget
-from qtpy.QtGui import QCloseEvent
+from PyQt6.QtGui import QCloseEvent
+from PyQt6.QtCore import pyqtSlot
 
 from package.ui.custom_button import CustomQPButton
+from package.ui.toast_manager import toasts
+from package.utils.tts import TTSThread
 
 
 class Ui_SpeechWindow(QWidget):
+    _tts_active = False
+    _active_instance = None
+
     def __init__(self, parent, window_key, text):
         super().__init__()
 
+        if Ui_SpeechWindow._tts_active:
+            print("se encuentra activo")
+            return
+
+        Ui_SpeechWindow._tts_active = True
+        Ui_SpeechWindow._active_instance = self
+
         self.parent = parent
         self.window_key = window_key
-
-        print(text)
+        self.text = text
+        self.tts_thread = None
 
         self.setupUi(self)
+        self.show()
+        self.init_tts()
 
     def setupUi(self, SpeechWindow):
         SpeechWindow.setObjectName("SpeechWindow")
@@ -53,7 +68,7 @@ class Ui_SpeechWindow(QWidget):
 
         # Button stop
         # self.button_stop = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget)
-        self.button_stop = CustomQPButton(on_click=lambda: print("stop"))
+        self.button_stop = CustomQPButton(on_click=self.tts_stop)
         self.button_stop.setMinimumSize(QtCore.QSize(0, 48))
         self.button_stop.setStyleSheet("border:none; background-color: transparent;")
         self.button_stop.setText("")
@@ -151,10 +166,60 @@ class Ui_SpeechWindow(QWidget):
 
         obj.move(x, y)
 
+    def init_tts(self):
+        if self.tts_thread is not None and self.tts_thread.isRunning():
+            print("El TTS ya está en ejecución.")
+            return
+
+        self.tts_thread = TTSThread(self.text)
+        self.tts_thread.finished.connect(self.on_tts_finished)
+        self.tts_thread.error.connect(self.on_tts_error)
+
+        # self.tts_thread.stop()  # En dado caso se encuentre en el loop
+        self.tts_thread.start()
+
+    def tts_stop(self):
+        if self.tts_thread is None:
+            return
+
+        if self.tts_thread.isRunning():
+            self.tts_thread.stop()
+            self.tts_thread.quit()
+
+    @pyqtSlot()
+    def on_tts_finished(self):
+        print("TTS finished!")
+
+        self.tts_thread = None
+
+        Ui_SpeechWindow._tts_active = False
+        Ui_SpeechWindow._active_instance
+
+    @pyqtSlot(str)
+    def on_tts_error(self, error):
+        toasts().error(error)
+
+        Ui_SpeechWindow._tts_active = False
+        Ui_SpeechWindow._active_instance = None
+
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
+        self.tts_stop()
+
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
             return
 
         self.parent.handle_windows(self.window_key)
 
+        Ui_SpeechWindow._tts_active = False
+        Ui_SpeechWindow._active_instance = None
+
         return super().closeEvent(a0)
+
+    @staticmethod
+    def check_existing_instance():
+        if Ui_SpeechWindow._tts_active and Ui_SpeechWindow._active_instance:
+            instance = Ui_SpeechWindow._active_instance
+            instance.raise_()  # Lleva la ventana existente al frente
+            toasts().info("La ventana de TTS ya está abierta.")
+            return True
+        return False

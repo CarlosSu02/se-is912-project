@@ -307,7 +307,9 @@ class MainWindow(QWidget):
                 if content is None
                 else window(self, window_key, content)
             )
-            self.windows[window_key].show()
+
+            if content is None:
+                self.windows[window_key].show()
 
         else:
             # self.windows[window_key].close()
@@ -345,9 +347,11 @@ class MainWindow(QWidget):
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
-        self.handle_speech(handle_req_screeshot())
+        text = handle_req_screeshot()
 
         self.show()  # Open widget after take_ss
+
+        self.handle_speech(text)
         # self.handle_windows(Window.SPEECH)
 
     # handle_speech => para manejo del tts global, ya que todas las ventanas y funciones podrían tener acceso a este método
@@ -357,8 +361,11 @@ class MainWindow(QWidget):
             if text is None:
                 raise Exception("Ocurrió un error, por favor inténtelo más tarde.")
 
-            if Window.SPEECH in self.windows:
-                self.handle_windows(Window.SPEECH)
+            # if Window.SPEECH in self.windows:
+            #     self.handle_windows(Window.SPEECH)
+
+            if Ui_SpeechWindow.check_existing_instance():
+                return
 
             self.handle_windows(Window.SPEECH, content=text)
 
