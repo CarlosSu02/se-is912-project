@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from package.helpers.functions import handle_req_question
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
@@ -165,9 +166,21 @@ class QuestionWindow(QWidget):
         question = self.question_area.toPlainText()
         prompt = self.current_prompt
 
-        print(self.prompts_file.get_value(prompt))
+        # print(self.prompts_file.get_value(prompt))
+        self.close()
 
-        toasts().success(f"Prompt: { prompt }, Pregunta: { question }")
+        # toasts().success(f"Prompt: { prompt }, Pregunta: { question }")
+
+        text = handle_req_question(prompt, question)
+
+        if not hasattr(self.parent, "handle_speech") or not isinstance(
+            self.parent, QWidget
+        ):
+            return
+
+        self.parent.handle_speech(text)
+
+        return
 
     def update_height(self):
         self.main_layout.setSpacing(20)

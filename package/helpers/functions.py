@@ -5,7 +5,12 @@ from pyqttoast.os_utils import os
 from package.helpers.screenshot import take_ss
 from package.ui.toast_manager import toasts
 from package.utils.files import encode_to_base64
-from package.helpers.clients import current_client, vision_clients
+from package.helpers.clients import (
+    current_client,
+    vision_clients,
+    text_clients,
+    documents_clients,
+)
 
 
 def handle_req_screeshot():
@@ -26,29 +31,46 @@ def handle_req_screeshot():
         return
 
 
-def handle_req_files(fileName):
+def handle_req_files_media(fileName):
     try:
-        file_base64 = handle_load_file(fileName)
+        info = handle_load_file(fileName)
 
-        if file_base64 is None:
+        if info is None:
             return
 
-        return file_base64
+        res = vision_clients[str(current_client)](
+            image_media_type=info["media_type"], base64_string=info["data"]
+        )
+
+        return res
 
     except Exception as e:
         toasts().error(e)
 
 
-def handle_req_document():
+def handle_req_document(fileName):
     try:
-        pass
+        info = handle_load_file(fileName)
+
+        if info is None:
+            return
+
+        res = documents_clients[str(current_client)](
+            document_media_type=info["media_type"], base64_string=info["data"]
+        )
+
+        return res
+
     except Exception as e:
         toasts().error(e)
 
 
-def handle_req_question():
+def handle_req_question(prompt, text):
     try:
-        pass
+        res = text_clients[str(current_client)](prompt, text)
+
+        return res
+
     except Exception as e:
         toasts().error(e)
 
@@ -60,11 +82,11 @@ def handle_load_file(fileName):
 
     try:
         file_name = os.path.basename(fileName)
-        toasts().info(file_name)
+        # toasts().info(file_name)
 
-        base64 = encode_to_base64(fileName)
+        data = encode_to_base64(fileName)
 
-        return base64
+        return data
 
     except Exception as e:
         toasts().error(str(e))

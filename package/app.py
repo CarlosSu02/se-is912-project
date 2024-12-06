@@ -12,7 +12,11 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from package.helpers.functions import handle_req_files, handle_req_screeshot
+from package.helpers.functions import (
+    handle_req_document,
+    handle_req_files_media,
+    handle_req_screeshot,
+)
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
@@ -334,7 +338,9 @@ class MainWindow(QWidget):
             self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
         )
 
-        handle_req_files(fileName)
+        text = handle_req_files_media(fileName)
+
+        self.handle_speech(text)
 
     def load_docs_from_files(self):
         fileName, _ = QFileDialog.getOpenFileName(
@@ -342,7 +348,9 @@ class MainWindow(QWidget):
         )
 
         # handle_req_image(fileName)
-        handle_req_files(fileName)
+        text = handle_req_document(fileName)
+
+        self.handle_speech(text)
 
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss

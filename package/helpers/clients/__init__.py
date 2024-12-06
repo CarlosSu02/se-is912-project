@@ -10,4 +10,4 @@ text_clients = {claude: text_claude}
 
 vision_clients = {claude: vision_claude}
 
-documtents_clients = {claude: documents_claude}
+documents_clients = {claude: documents_claude}
