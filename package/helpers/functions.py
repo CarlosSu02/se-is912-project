@@ -19,8 +19,11 @@ def handle_req_screeshot():
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
+        return res
+
     except Exception as e:
         toasts().error(e)
+        return
 
 
 def handle_req_files(fileName):

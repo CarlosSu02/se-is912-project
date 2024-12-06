@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
 from package.helpers.functions import handle_req_files, handle_req_screeshot
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
+from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
 from package.ui.windows.question_window import QuestionWindow
@@ -291,15 +292,21 @@ class MainWindow(QWidget):
         self.setFixedHeight(new_h)
         self.bgwidget.setFixedHeight(new_h)
 
-    def handle_windows(self, window_key):
+    def handle_windows(self, window_key, *args, **kwargs):
         # print(self.__windows_list)
         # print(self.windows)
 
-        window = window_key in self.windows
+        exists_window = window_key in self.windows
 
-        if not window:
+        if not exists_window:
             # self.w = AnotherWindow(self)
-            self.windows[window_key] = self.__windows_list[window_key](self, window_key)
+            window = self.__windows_list[window_key]
+            content = kwargs.get("content", None)
+            self.windows[window_key] = (
+                window(self, window_key)
+                if content is None
+                else window(self, window_key, content)
+            )
             self.windows[window_key].show()
 
         else:
@@ -338,10 +345,25 @@ class MainWindow(QWidget):
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
-        handle_req_screeshot()
+        self.handle_speech(handle_req_screeshot())
 
         self.show()  # Open widget after take_ss
-        self.handle_windows(Window.SPEECH)
+        # self.handle_windows(Window.SPEECH)
+
+    # handle_speech => para manejo del tts global, ya que todas las ventanas y funciones podrían tener acceso a este método
+    # se le pasa el texto y nada más
+    def handle_speech(self, text):
+        try:
+            if text is None:
+                raise Exception("Ocurrió un error, por favor inténtelo más tarde.")
+
+            if Window.SPEECH in self.windows:
+                self.handle_windows(Window.SPEECH)
+
+            self.handle_windows(Window.SPEECH, content=text)
+
+        except Exception as e:
+            toasts().error(e)
 
 
 # TODO: order code.

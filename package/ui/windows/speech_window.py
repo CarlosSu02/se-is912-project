@@ -16,11 +16,13 @@ from package.ui.custom_button import CustomQPButton
 
 
 class Ui_SpeechWindow(QWidget):
-    def __init__(self, parent, window_key):
+    def __init__(self, parent, window_key, text):
         super().__init__()
 
         self.parent = parent
         self.window_key = window_key
+
+        print(text)
 
         self.setupUi(self)
 

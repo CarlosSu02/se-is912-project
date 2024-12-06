@@ -268,7 +268,7 @@ class Ui_DotEnvWindow(QWidget):
         # The error is handling in open_file function on set_env
         toasts().success("Se agregó la API Key al archivo .env.")
 
-        self.parent.enabled_items()
+        self.enabled_items()
 
         self.close()
 
@@ -291,9 +291,17 @@ class Ui_DotEnvWindow(QWidget):
         if not delete:
             return toasts().error("Ocurrió un error al eliminar la API Key.")
 
-        self.parent.enabled_items()
+        self.enabled_items()
 
         return toasts().success("¡La API Key se eliminó con éxito!")
+
+    def enabled_items(self):
+        if not hasattr(self.parent, "enabled_items") or not isinstance(
+            self.parent, QWidget
+        ):
+            return
+
+        self.parent.enabled_items()
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
