@@ -167,3 +167,4 @@ cython_debug/
 # Others
 scs/
 .env
+db/data
