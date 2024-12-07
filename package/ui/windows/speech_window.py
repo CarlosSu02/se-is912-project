@@ -260,7 +260,7 @@ class Ui_SpeechWindow(QWidget):
 
             self.close()
 
-            toasts().success("Se guardaron los archivos correctamente.")
+            toasts().success(f"Se guardaron los archivos en { os.path.dirname(dir) }.")
 
         except Exception as e:
             toasts().error(e)

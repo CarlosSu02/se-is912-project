@@ -123,8 +123,6 @@ class Window(Enum):
 
 
 class MainWindow(QWidget):
-    __exists_env = exists_dotenv()
-
     __windows_list = {
         Window.CONFIG: ConfigWindow,
         Window.OTHER: AnotherWindow,
