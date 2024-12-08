@@ -164,17 +164,18 @@ class QuestionWindow(QWidget):
         print(self.current_prompt)
 
         question = self.question_area.toPlainText()
-        prompt = self.current_prompt
+        expert = self.current_prompt
+        prompt = self.prompts_file.get_value(expert)
 
         # print(self.prompts_file.get_value(prompt))
         self.close()
 
         # toasts().success(f"Prompt: { prompt }, Pregunta: { question }")
 
-        text = handle_req_question(prompt, question)
+        text = handle_req_question(expert, prompt, question)
 
         if not hasattr(self.parent, "handle_speech") or not isinstance(
-            self.parent, QWidget
+                self.parent, QWidget
         ):
             return
 
@@ -186,10 +187,10 @@ class QuestionWindow(QWidget):
         self.main_layout.setSpacing(20)
 
         new_h = (
-            self.container_prompts.height()
-            + self.container_textarea.height()
-            + self.container_buttons.height()
-            + 20
+                self.container_prompts.height()
+                + self.container_textarea.height()
+                + self.container_buttons.height()
+                + 20
         )
 
         self.setFixedHeight(new_h)

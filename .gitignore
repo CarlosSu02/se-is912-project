@@ -168,3 +168,4 @@ cython_debug/
 scs/
 .env
 db/data
+.idea

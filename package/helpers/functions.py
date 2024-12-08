@@ -2,6 +2,8 @@
 
 
 from pyqttoast.os_utils import os
+from db.media_db import MediaType, TMedia
+from db.question_db import TQuestion
 from package.helpers.screenshot import take_ss
 from package.ui.toast_manager import toasts
 from package.utils.files import encode_to_base64
@@ -24,6 +26,8 @@ def handle_req_screeshot():
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
+        TMedia.add_element(type=MediaType.SCREESHOT, response=res)
+
         return res
 
     except Exception as e:
@@ -42,6 +46,8 @@ def handle_req_files_media(fileName):
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
+        TMedia.add_element(type=MediaType.IMAGE, response=res)
+
         return res
 
     except Exception as e:
@@ -59,15 +65,19 @@ def handle_req_document(fileName):
             document_media_type=info["media_type"], base64_string=info["data"]
         )
 
+        TMedia.add_element(type=MediaType.DOCUMENT, response=res)
+
         return res
 
     except Exception as e:
         toasts().error(e)
 
 
-def handle_req_question(prompt, text):
+def handle_req_question(expert, prompt, text):
     try:
         res = text_clients[str(current_client)](prompt, text)
+
+        TQuestion.add_element(expert, text, res)
 
         return res
 
