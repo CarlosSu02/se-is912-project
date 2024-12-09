@@ -47,37 +47,6 @@ basic_qss = f"""
 BG_TRANSPARENT = "background-color: rgba(0, 0, 0, 0.5)"
 
 
-class AnotherWindow(QWidget):
-    """
-    This "window" is a QWidget. If it has no parent, it
-    will appear as a free-floating window as we want.
-    """
-
-    def __init__(self, parent, window_key):
-        super().__init__()
-        layout = QVBoxLayout()
-        self.label = QLabel("Another Window % d" % randint(0, 100))
-        layout.addWidget(self.label)
-        self.setLayout(layout)
-        # self.ui.closeButton.clicked.connect(text)
-        self.parent = parent
-        self.window_key = window_key
-
-    def text(self):
-        print("press!")
-
-    def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
-        print("close!")
-        # self.close()
-
-        if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
-            return
-
-        self.parent.handle_windows(self.window_key)
-
-        return super().closeEvent(a0)
-
-
 class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, icon: QIcon, parent: QWidget | None = None):
         super().__init__(icon, parent)
@@ -117,7 +86,6 @@ class SystemTrayIcon(QSystemTrayIcon):
 # Para listar las ventanas disponibles
 class Window(Enum):
     CONFIG = "config"
-    OTHER = "other"
     QUESTION = "question"
     DOTENV = "dotenv"
     SPEECH = "speech"
@@ -127,7 +95,6 @@ class Window(Enum):
 class MainWindow(QWidget):
     __windows_list = {
         Window.CONFIG: ConfigWindow,
-        Window.OTHER: AnotherWindow,
         Window.QUESTION: QuestionWindow,
         Window.DOTENV: Ui_DotEnvWindow,
         Window.SPEECH: Ui_SpeechWindow,

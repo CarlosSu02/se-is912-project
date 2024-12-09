@@ -26,7 +26,7 @@ class TMedia:
 
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM media_responses")
+            cursor.execute(_get_data_query)
 
             res = cursor.fetchall()
 
@@ -88,6 +88,7 @@ class TMedia:
         except sqlite3.Error as err:
             print(f"Error: {err}")
             return
+
         except ValueError as ve:
             print(f"ValueError: {ve}")
             return

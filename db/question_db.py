@@ -19,7 +19,7 @@ class TQuestion:
 
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM questions_responses")
+            cursor.execute(_get_data_query)
 
             res = cursor.fetchall()
 
@@ -81,6 +81,7 @@ class TQuestion:
         except sqlite3.Error as err:
             print(f"Error: {err}")
             return
+
         except ValueError as ve:
             print(f"ValueError: {ve}")
             return
