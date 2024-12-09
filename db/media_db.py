@@ -1,7 +1,10 @@
 from enum import Enum
 import sqlite3
+import pandas as pd
 from db.connect_db import ConnectDB
 from package.helpers.clients import current_client
+
+_get_data_query = "SELECT * FROM media_responses;"
 
 
 class MediaType(Enum):
@@ -11,6 +14,7 @@ class MediaType(Enum):
 
 
 class TMedia:
+
     def get_data():
         try:
             conn = ConnectDB().connection()
@@ -33,6 +37,26 @@ class TMedia:
 
         except sqlite3.Error as err:
             print(f"Error: {err}")
+            return
+
+    def get_data_pandas():
+        try:
+
+            conn = ConnectDB().connection()
+
+            if conn is None:
+                raise sqlite3.Error(
+                    "No se pudo establecer la conexión a la base de datos."
+                )
+
+            df = pd.read_sql_query(_get_data_query, conn)
+
+            conn.close()
+
+            return df
+
+        except Exception as e:
+            print(f"Error: {e}")
             return
 
     def add_element(type: MediaType, response=None, client=current_client):

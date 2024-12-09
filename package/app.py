@@ -2,7 +2,7 @@ import sys
 import typing
 from enum import Enum
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QCloseEvent, QIcon
+from PyQt6.QtGui import QAction, QCloseEvent, QIcon, QPalette, QColor
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -140,6 +140,8 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        # self.apply_light_mode()
+
         # self.setGeometry(0, 30, 100, 100)
         self.resize(WINDOW_SIZE_WH, WINDOW_SIZE_WH)
         self.setWindowTitle("First window PyQt6")
@@ -173,6 +175,21 @@ class MainWindow(QWidget):
 
         self.windows = {}
         self.show()
+
+    def apply_light_mode(self):
+        # Crear una paleta para el modo claro
+        palette = QPalette()
+
+        # Definir colores claros para la interfaz
+        palette.setColor(QPalette.ColorRole.Window, QColor(255, 255, 255))  # Fondo blanco
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))  # Texto negro
+        palette.setColor(QPalette.ColorRole.Button, QColor(255, 255, 255))  # Botones blancos
+        palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))  # Texto de botones negro
+        palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))  # Fondo de cajas de texto blanco
+        palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))  # Texto en cajas de texto negro
+
+        # Aplicar la paleta al resto de la aplicación
+        QApplication.instance().setPalette(palette)
 
     def topRightOffset(self):
         fg = self.frameGeometry()
@@ -388,11 +405,37 @@ class MainWindow(QWidget):
             toasts().error(e)
 
 
+def set_light_mode(app):
+    # Establecer el estilo 'Fusion'
+    app.setStyle('Fusion')
+
+    # Crear una paleta clara
+    palette = QPalette()
+
+    # Definir colores para el modo claro
+    palette.setColor(QPalette.ColorRole.Window, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.Base, QColor(240, 240, 240))
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.Button, QColor(240, 240, 240))
+    palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
+    palette.setColor(QPalette.ColorRole.Highlight, QColor(0, 120, 215))
+    palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
+
+    # Aplicar la paleta a la aplicación
+    app.setPalette(palette)
+
+
 # TODO: order code.
 app = QApplication(sys.argv)
 app.setQuitOnLastWindowClosed(
     False
 )  # Evita que la aplicación termine al cerrar la última ventana
+# set_light_mode(app)
 window = MainWindow()
 
 tray_icon = SystemTrayIcon(QIcon("./icons/widget.ico"), window)
