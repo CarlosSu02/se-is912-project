@@ -105,8 +105,8 @@ class QuestionCanvas(FigureCanvas):
             colors=pastel,
             explode=(value_counts == max(value_counts)) * 0.08,
         )
-        ax.legend(labels=[f"{label}, {count}" for label, count in value_counts.items()], loc="best",
-                  bbox_to_anchor=(0.5, 0), ncol=1)
+        ax.legend(labels=[f"{label.capitalize()}: {count}" for label, count in value_counts.items()], loc="best",
+                  bbox_to_anchor=(0, 0), ncol=1)
 
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
@@ -268,7 +268,7 @@ class Ui_GraphicsWindow(QMainWindow):
         self.frame_options_question.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_options_question.setObjectName("frame_options_question")
 
-        self.vertical_layout_questions.addWidget(self.frame_options_question)
+        # self.vertical_layout_questions.addWidget(self.frame_options_question)
 
         self.frame_graphic_question = QtWidgets.QFrame(parent=self.tab_questions)
         # self.frame_graphic_question.setStyleSheet("border: 1px solid;")

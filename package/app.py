@@ -257,6 +257,7 @@ class MainWindow(QWidget):
         )
 
         button_graphics = CustomQPButton(
+            icon="./icons/chart.svg",
             text="key",
             on_click=lambda: self.handle_windows(Window.GRAPHICS),
         )
