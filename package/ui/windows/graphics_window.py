@@ -9,7 +9,7 @@ import typing
 import pandas as pd
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy
+from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy, QLabel, QHBoxLayout, QVBoxLayout
 
 from db.connect_db import ConnectDB
 from db.media_db import TMedia
@@ -27,69 +27,29 @@ from matplotlib.figure import Figure
 plt.style.use('dark_background')
 
 
-# plt.rcParams.update({
-#     "lines.color": "white",
-#     "patch.edgecolor": "white",
-#     "text.color": "black",
-#     "axes.facecolor": "white",
-#     "axes.edgecolor": "lightgray",
-#     "axes.labelcolor": "white",
-#     "xtick.color": "white",
-#     "ytick.color": "white",
-#     "grid.color": "lightgray",
-#     "figure.facecolor": "black",
-#     "figure.edgecolor": "black",
-#     "savefig.facecolor": "black",
-#     "savefig.edgecolor": "black"})
-
-
-# class MplCanvas(FigureCanvasQTAgg):
-#
-#     def __init__(self, parent=None, width=5, height=4, dpi=100):
-#         fig = Figure(figsize=(width, height), dpi=dpi)
-#         self.axes = fig.add_subplot(111)
-#         super().__init__(fig)
-
-
 class MediaCanvas(FigureCanvas):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, df=None):
         fig, ax = plt.subplots(1, dpi=100, figsize=(3, 3),
-                               sharey=True, facecolor='none')
+                               sharey=True, facecolor="none")
 
-        ax.set_facecolor('none')
-        fig.patch.set_facecolor('none')
+        ax.set_facecolor("none")
+        fig.patch.set_facecolor("none")
 
         super().__init__(fig)
-        '''
-            data = TMedia.get_data()
-            print(pd.DataFrame(data))
 
-            conn = ConnectDB().connection()
-            if conn is None:
-                return
-
-            df = pd.read_sql_query('SELECT * FROM media_responses', conn)
-
-            conn.close()
-            print(df.head())
-
-        '''
-
-        # ax.bar(nombres, tamaño, color=colores)
         # self.setFixedSize(400, 400)
-
-        df = TMedia.get_data_pandas()
 
         if df is None:
             return
 
-        y = df['type'].value_counts()
+        y = df["type"].value_counts()
         x = y.index
 
-        ax.set_xlabel('Tipo', labelpad=10)
-        ax.set_ylabel('Total', labelpad=15)
+        ax.set_xlabel("Tipo", labelpad=10)
+        ax.set_ylabel("Total", labelpad=15)
 
         ax.bar(x, y, width=0.3)
+
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
 
@@ -102,36 +62,6 @@ class MediaCanvas(FigureCanvas):
         super().resizeEvent(event)
         self.figure.tight_layout()
         self.draw()
-
-
-"""
-
-
-class Canvas_grafica(FigureCanvas):
-    def __init__(self, parent=None):
-        # Configurar figura y ejes con colores para modo oscuro
-        self.fig, self.ax = plt.subplots(1, dpi=100, figsize=(5, 5),
-                                         sharey=True, facecolor='#2e2e2e')  # Fondo oscuro
-        super().__init__(self.fig)
-
-        # Datos de la gráfica
-        nombres = ['15', '25', '30', '35', '40']
-        colores = ['#ff6f61', '#ff6f61', '#ff6f61', '#ff6f61', '#ff6f61']  # Tonos visibles en fondo oscuro
-        tamaño = [10, 15, 20, 25, 30]
-
-        # Gráfica de barras
-        self.ax.bar(nombres, tamaño, color=colores)
-
-        # Personalización del estilo en modo oscuro
-        self.ax.set_facecolor('#2e2e2e')  # Fondo del gráfico
-        self.ax.tick_params(axis='x', colors='white')  # Ejes x
-        self.ax.tick_params(axis='y', colors='white')  # Ejes y
-        self.ax.spines['bottom'].set_color('white')  # Color del marco inferior
-        self.ax.spines['left'].set_color('white')  # Color del marco izquierdo
-
-        # Título y etiquetas
-        self.fig.suptitle('Grafica de Barras', size=9, color='white')  # Título en blanco
-"""
 
 
 class Ui_GraphicsWindow(QMainWindow):
@@ -167,46 +97,9 @@ class Ui_GraphicsWindow(QMainWindow):
         self.tab_widget.setMinimumSize(QtCore.QSize(0, 150))
         self.tab_widget.setObjectName("tab_widget")
 
-        self.tab_media = QtWidgets.QWidget()
-        self.tab_media.setObjectName("tab_media")
+        self.set_tab_media()
 
-        self.vertical_layout_media = QtWidgets.QVBoxLayout(self.tab_media)
-        self.vertical_layout_media.setObjectName("vertical_layout_media")
-        self.vertical_layout_media.setContentsMargins(0, 5, 0, 5)
-
-        self.frame_options_media = QtWidgets.QFrame(parent=self.tab_media)
-        self.frame_options_media.setMaximumHeight(100)
-        # self.frame_options_media.setStyleSheet("border: 1px solid;")
-        self.frame_options_media.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_options_media.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame_options_media.setObjectName("frame_options_media")
-
-        # vertical_layout_media and frame_graphic_media
-        self.vertical_layout_media.addWidget(self.frame_options_media)
-
-        self.frame_graphic_media = QtWidgets.QFrame(parent=self.tab_media)
-
-        # self.frame_graphic_media.setStyleSheet("border: 1px solid;")
-        self.frame_graphic_media.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_graphic_media.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-
-        self.frame_graphic_media.setObjectName("frame_graphic_media")
-
-        self.vertical_layout_media.addWidget(self.frame_graphic_media)
-        self.vertical_layout_media.setStretch(0, 1)
-        self.vertical_layout_media.setStretch(1, 5)
-
-        # vertical_layout_graphic_media and layout_graphic_media
-        self.vertical_layout_graphic_media = QtWidgets.QVBoxLayout(self.frame_graphic_media)
-        self.vertical_layout_graphic_media.setObjectName("vertical_layout_graphic_media")
-
-        self.layout_graphic_media = QtWidgets.QVBoxLayout()
-        self.layout_graphic_media.setObjectName("layout_graphic_media")
-
-        self.vertical_layout_graphic_media.addLayout(self.layout_graphic_media)
-
-        self.tab_widget.addTab(self.tab_media, "")
-
+        # tab_questions
         self.tab_questions = QtWidgets.QWidget()
         self.tab_questions.setObjectName("tab_questions")
 
@@ -251,17 +144,8 @@ class Ui_GraphicsWindow(QMainWindow):
 
         self.retranslateUi(GraphicsWindow)
         self.tab_widget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(GraphicsWindow)
-        self.frame_options_media.setStyleSheet("""
-            border: none;
-            background-color: #2e2e2e; /* Fondo oscuro opcional */
-        """)
 
-        self.frame_graphic_media.setStyleSheet("""
-            border: none;
-            background-color: #2e2e2e; /* Fondo oscuro opcional */
-        """)
-        # self.frame_graphic_media.setFixedSize(400, 400)
+        QtCore.QMetaObject.connectSlotsByName(GraphicsWindow)
 
         self.frame_options_question.setStyleSheet("""
             border: none;
@@ -275,18 +159,132 @@ class Ui_GraphicsWindow(QMainWindow):
         # border: 1px ;
         # border-radius: 10px; /* Borde redondeado */
 
-        graphic_one = MediaCanvas()
-        self.layout_graphic_media.addWidget(graphic_one)
-
-        # self.vertical_layout_graphic_media.addWidget(graphic_one)
-        # self.vertical_layout_graphic_media.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetFixedSize)
-
     def retranslateUi(self, GraphicsWindow):
         _translate = QtCore.QCoreApplication.translate
         GraphicsWindow.setWindowTitle(_translate("GraphicsWindow", "MainWindow"))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_media), _translate("GraphicsWindow", "Media"))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_questions),
                                    _translate("GraphicsWindow", "Preguntas"))
+
+    def set_tab_media(self):
+        self.tab_media = QtWidgets.QWidget()
+        self.tab_media.setObjectName("tab_media")
+
+        self.vertical_layout_media = QtWidgets.QVBoxLayout(self.tab_media)
+        self.vertical_layout_media.setObjectName("vertical_layout_media")
+        self.vertical_layout_media.setContentsMargins(0, 5, 0, 5)
+
+        self.frame_options_media = QtWidgets.QFrame(parent=self.tab_media)
+        self.frame_options_media.setMaximumHeight(100)
+        # self.frame_options_media.setStyleSheet("border: 1px solid;")
+        self.frame_options_media.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_options_media.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_options_media.setObjectName("frame_options_media")
+
+        # vertical_layout_media and frame_graphic_media
+        self.vertical_layout_media.addWidget(self.frame_options_media)
+
+        self.frame_graphic_media = QtWidgets.QFrame(parent=self.tab_media)
+
+        # self.frame_graphic_media.setStyleSheet("border: 1px solid;")
+        self.frame_graphic_media.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_graphic_media.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+
+        self.frame_graphic_media.setObjectName("frame_graphic_media")
+
+        self.vertical_layout_media.addWidget(self.frame_graphic_media)
+        self.vertical_layout_media.setStretch(0, 1)
+        self.vertical_layout_media.setStretch(1, 5)
+
+        # vertical_layout_graphic_media and layout_graphic_media
+        self.vertical_layout_graphic_media = QtWidgets.QVBoxLayout(self.frame_graphic_media)
+        self.vertical_layout_graphic_media.setObjectName("vertical_layout_graphic_media")
+
+        self.layout_graphic_media = QtWidgets.QVBoxLayout()
+        self.layout_graphic_media.setObjectName("layout_graphic_media")
+
+        self.vertical_layout_graphic_media.addLayout(self.layout_graphic_media)
+
+        self.tab_widget.addTab(self.tab_media, "")
+
+        # Styles
+        self.frame_options_media.setStyleSheet("""
+            border: none;
+            background-color: #2e2e2e; /* Fondo oscuro opcional */
+        """)
+
+        self.frame_graphic_media.setStyleSheet("""
+            border: none;
+            background-color: #2e2e2e; /* Fondo oscuro opcional */
+        """)
+        # self.frame_graphic_media.setFixedSize(400, 400)
+
+        # get_data
+        df = TMedia.get_data_pandas()
+
+        # Elements options
+        self.set_layout_options_media(df)
+
+        # Graphic
+        graphic_media = MediaCanvas(df=df)
+        self.layout_graphic_media.addWidget(graphic_media)
+
+    def set_layout_options_media(self, df):
+        # vertical_layout_graphic_media and layout_graphic_media
+        # self.vertical_layout_options_media = QtWidgets.QVBoxLayout(self.frame_options_media)
+        # self.vertical_layout_options_media.setObjectName("vertical_layout_graphic_media")
+        #
+        # self.layout_options_media = QtWidgets.QVBoxLayout()
+        # self.layout_options_media.setObjectName("layout_graphic_media")
+        #
+        # self.vertical_layout_options_media.addLayout(self.layout_options_media)
+        # t = QLabel()
+        # t.setText('Test')
+        # self.layout_options_media.addWidget(t)
+        # t2 = QLabel('Test2', self)
+        # self.layout_options_media.addWidget(t2)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+        # self.layout_options_media.addWidget(t)
+
+        # Usamos QGridLayout para colocar los elementos como tarjetas
+        self.layout_options_media = QtWidgets.QGridLayout()
+        self.layout_options_media.setObjectName("layout_graphic_media")
+
+        self.frame_options_media.setLayout(self.layout_options_media)
+
+        value_counts = df["type"].value_counts()
+        items = [(label, count) for label, count in value_counts.items()]
+
+        # Número de elementos por fila
+        items_per_row = 3
+
+        # Usamos un bucle para agregar elementos dinámicamente
+        row = 0
+        col = 0
+
+        for i, (name, count) in enumerate(items):
+            label = QLabel(f"{name.capitalize()}: {count}", self)
+            # label.setStyleSheet('background-color: lightblue; border: 1px solid black; padding: 10px;')
+
+            label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+            container_layout = QVBoxLayout()
+            container_layout.addWidget(label)
+
+            self.layout_options_media.addLayout(container_layout, row, col)
+
+            col += 1
+            if col == items_per_row:
+                col = 0
+                row += 1
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
