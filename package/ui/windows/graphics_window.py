@@ -18,15 +18,21 @@ from package.ui.styles import get_stylesheet
 
 # Graphics
 import matplotlib
+import seaborn as sns
 
-matplotlib.use('QtAgg')
+matplotlib.use("QtAgg")
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
 
-plt.style.use('dark_background')
+plt.style.use("dark_background")
+
+# Colors
+deep = sns.color_palette("deep")
+colorblind = sns.color_palette("colorblind")
+pastel = sns.color_palette("pastel")
 
 
 class MediaCanvas(FigureCanvas):
@@ -50,7 +56,7 @@ class MediaCanvas(FigureCanvas):
         ax.set_xlabel("Tipo", labelpad=10)
         ax.set_ylabel("Total", labelpad=15)
 
-        ax.bar(x, y, width=0.3)
+        ax.bar(x, y, width=0.3, color=deep)
 
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
@@ -84,19 +90,29 @@ class QuestionCanvas(FigureCanvas):
         if df is None:
             return
 
-        y = df["expert"].value_counts()
-        x = y.index
+        # y = df["expert"].value_counts()
+        # x = y.index
+        value_counts = df["expert"].value_counts()
 
-        ax.set_xlabel("Tipo", labelpad=10)
-        ax.set_ylabel("Total", labelpad=15)
+        # ax.set_xlabel("Tipo", labelpad=10)
+        # ax.set_ylabel("Total", labelpad=15)
 
-        ax.bar(x, y, width=0.4)
+        # ax.bar(x, y, color=pastel)
+        ax.pie(
+            value_counts,
+            autopct="%.0f%%",
+            # labels=value_counts.index,
+            colors=pastel,
+            explode=(value_counts == max(value_counts)) * 0.08,
+        )
+        ax.legend(labels=[f"{label}, {count}" for label, count in value_counts.items()], loc="best",
+                  bbox_to_anchor=(0.5, 0), ncol=1)
 
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
 
         # Valores enteros
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        # ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Ajustar tamaño dinámico según el contenedor
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
