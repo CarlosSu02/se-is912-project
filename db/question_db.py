@@ -1,6 +1,9 @@
 import sqlite3
+import pandas as pd
 from db.connect_db import ConnectDB
 from package.helpers.clients import current_client
+
+_get_data_query = "SELECT * FROM questions_responses;"
 
 
 class TQuestion:
@@ -27,6 +30,26 @@ class TQuestion:
 
         except sqlite3.Error as err:
             print(f"Error: {err}")
+            return
+
+    def get_data_pandas():
+        try:
+
+            conn = ConnectDB().connection()
+
+            if conn is None:
+                raise sqlite3.Error(
+                    "No se pudo establecer la conexión a la base de datos."
+                )
+
+            df = pd.read_sql_query(_get_data_query, conn)
+
+            conn.close()
+
+            return df
+
+        except Exception as e:
+            print(f"Error: {e}")
             return
 
     def add_element(expert=None, question=None, response=None, client=current_client):

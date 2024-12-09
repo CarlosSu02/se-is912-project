@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy, QLabel, QHBoxLayo
 
 from db.connect_db import ConnectDB
 from db.media_db import TMedia
+from db.question_db import TQuestion
 from package.ui.styles import get_stylesheet
 
 # Graphics
@@ -23,6 +24,7 @@ matplotlib.use('QtAgg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
 
 plt.style.use('dark_background')
 
@@ -52,6 +54,49 @@ class MediaCanvas(FigureCanvas):
 
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
+
+        # Valores enteros
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+        # Ajustar tamaño dinámico según el contenedor
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.updateGeometry()
+
+    def resizeEvent(self, event):
+        """Ajustar el diseño al cambiar el tamaño de la ventana."""
+        super().resizeEvent(event)
+        self.figure.tight_layout()
+        self.draw()
+
+
+class QuestionCanvas(FigureCanvas):
+    def __init__(self, parent=None, df=None):
+        fig, ax = plt.subplots(1, dpi=100, figsize=(3, 3),
+                               sharey=True, facecolor="none")
+
+        ax.set_facecolor("none")
+        fig.patch.set_facecolor("none")
+
+        super().__init__(fig)
+
+        # self.setFixedSize(400, 400)
+
+        if df is None:
+            return
+
+        y = df["expert"].value_counts()
+        x = y.index
+
+        ax.set_xlabel("Tipo", labelpad=10)
+        ax.set_ylabel("Total", labelpad=15)
+
+        ax.bar(x, y, width=0.4)
+
+        # Ajustar automáticamente los márgenes
+        fig.tight_layout()
+
+        # Valores enteros
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Ajustar tamaño dinámico según el contenedor
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -98,44 +143,7 @@ class Ui_GraphicsWindow(QMainWindow):
         self.tab_widget.setObjectName("tab_widget")
 
         self.set_tab_media()
-
-        # tab_questions
-        self.tab_questions = QtWidgets.QWidget()
-        self.tab_questions.setObjectName("tab_questions")
-
-        self.vertical_layout_questions = QtWidgets.QVBoxLayout(self.tab_questions)
-        self.vertical_layout_questions.setObjectName("vertical_layout_questions")
-        self.vertical_layout_questions.setContentsMargins(0, 5, 0, 5)
-
-        self.frame_options_question = QtWidgets.QFrame(parent=self.tab_questions)
-        self.frame_options_question.setMaximumHeight(100)
-        # self.frame_options_question.setStyleSheet("border: 1px solid;")
-        self.frame_options_question.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_options_question.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame_options_question.setObjectName("frame_options_question")
-
-        self.vertical_layout_questions.addWidget(self.frame_options_question)
-
-        self.frame_graphic_question = QtWidgets.QFrame(parent=self.tab_questions)
-        # self.frame_graphic_question.setStyleSheet("border: 1px solid;")
-        self.frame_graphic_question.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_graphic_question.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame_graphic_question.setObjectName("frame_graphic_question")
-
-        self.vertical_layout_questions.addWidget(self.frame_graphic_question)
-        self.vertical_layout_questions.setStretch(0, 1)
-        self.vertical_layout_questions.setStretch(1, 5)
-
-        # vertical_layout_graphic_questions and layout_graphic_questions
-        self.vertical_layout_graphic_questions = QtWidgets.QVBoxLayout(self.frame_graphic_question)
-        self.vertical_layout_graphic_questions.setObjectName("vertical_layout_graphic_questions")
-
-        self.layout_graphic_questions = QtWidgets.QVBoxLayout()
-        self.layout_graphic_questions.setObjectName("layout_graphic_questions")
-
-        self.vertical_layout_graphic_questions.addLayout(self.layout_graphic_questions)
-
-        self.tab_widget.addTab(self.tab_questions, "")
+        self.set_tab_questions()
 
         self.verticalLayout.addWidget(self.tab_widget)
         self.horizontalLayout.addWidget(self.main_frame)
@@ -146,18 +154,6 @@ class Ui_GraphicsWindow(QMainWindow):
         self.tab_widget.setCurrentIndex(0)
 
         QtCore.QMetaObject.connectSlotsByName(GraphicsWindow)
-
-        self.frame_options_question.setStyleSheet("""
-            border: none;
-            background-color: #2e2e2e; /* Fondo oscuro opcional */
-        """)
-
-        self.frame_graphic_question.setStyleSheet("""
-            border: none;
-            background-color: #2e2e2e; /* Fondo oscuro opcional */
-        """)
-        # border: 1px ;
-        # border-radius: 10px; /* Borde redondeado */
 
     def retranslateUi(self, GraphicsWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -217,7 +213,6 @@ class Ui_GraphicsWindow(QMainWindow):
             border: none;
             background-color: #2e2e2e; /* Fondo oscuro opcional */
         """)
-        # self.frame_graphic_media.setFixedSize(400, 400)
 
         # get_data
         df = TMedia.get_data_pandas()
@@ -230,43 +225,95 @@ class Ui_GraphicsWindow(QMainWindow):
         self.layout_graphic_media.addWidget(graphic_media)
 
     def set_layout_options_media(self, df):
-        # vertical_layout_graphic_media and layout_graphic_media
-        # self.vertical_layout_options_media = QtWidgets.QVBoxLayout(self.frame_options_media)
-        # self.vertical_layout_options_media.setObjectName("vertical_layout_graphic_media")
-        #
-        # self.layout_options_media = QtWidgets.QVBoxLayout()
-        # self.layout_options_media.setObjectName("layout_graphic_media")
-        #
-        # self.vertical_layout_options_media.addLayout(self.layout_options_media)
-        # t = QLabel()
-        # t.setText('Test')
-        # self.layout_options_media.addWidget(t)
-        # t2 = QLabel('Test2', self)
-        # self.layout_options_media.addWidget(t2)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-        # self.layout_options_media.addWidget(t)
-
         # Usamos QGridLayout para colocar los elementos como tarjetas
-        self.layout_options_media = QtWidgets.QGridLayout()
-        self.layout_options_media.setObjectName("layout_graphic_media")
+        layout_options_media = QtWidgets.QGridLayout()
+        layout_options_media.setObjectName("layout_graphic_media")
 
-        self.frame_options_media.setLayout(self.layout_options_media)
+        self.frame_options_media.setLayout(layout_options_media)
 
         value_counts = df["type"].value_counts()
         items = [(label, count) for label, count in value_counts.items()]
 
-        # Número de elementos por fila
+        self.add_elements_grid(items, layout_options_media)
+
+    def set_tab_questions(self):
+        # tab_questions
+        self.tab_questions = QtWidgets.QWidget()
+        self.tab_questions.setObjectName("tab_questions")
+
+        self.vertical_layout_questions = QtWidgets.QVBoxLayout(self.tab_questions)
+        self.vertical_layout_questions.setObjectName("vertical_layout_questions")
+        self.vertical_layout_questions.setContentsMargins(0, 5, 0, 5)
+
+        self.frame_options_question = QtWidgets.QFrame(parent=self.tab_questions)
+        self.frame_options_question.setMaximumHeight(100)
+        # self.frame_options_question.setStyleSheet("border: 1px solid;")
+        self.frame_options_question.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_options_question.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_options_question.setObjectName("frame_options_question")
+
+        self.vertical_layout_questions.addWidget(self.frame_options_question)
+
+        self.frame_graphic_question = QtWidgets.QFrame(parent=self.tab_questions)
+        # self.frame_graphic_question.setStyleSheet("border: 1px solid;")
+        self.frame_graphic_question.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_graphic_question.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_graphic_question.setObjectName("frame_graphic_question")
+
+        self.vertical_layout_questions.addWidget(self.frame_graphic_question)
+        self.vertical_layout_questions.setStretch(0, 1)
+        self.vertical_layout_questions.setStretch(1, 5)
+
+        # vertical_layout_graphic_questions and layout_graphic_questions
+        self.vertical_layout_graphic_questions = QtWidgets.QVBoxLayout(self.frame_graphic_question)
+        self.vertical_layout_graphic_questions.setObjectName("vertical_layout_graphic_questions")
+
+        self.layout_graphic_questions = QtWidgets.QVBoxLayout()
+        self.layout_graphic_questions.setObjectName("layout_graphic_questions")
+
+        self.vertical_layout_graphic_questions.addLayout(self.layout_graphic_questions)
+
+        self.tab_widget.addTab(self.tab_questions, "")
+
+        # Styles
+        self.frame_options_question.setStyleSheet("""
+            border: none;
+            background-color: #2e2e2e; /* Fondo oscuro opcional */
+        """)
+
+        self.frame_graphic_question.setStyleSheet("""
+            border: none;
+            background-color: #2e2e2e; /* Fondo oscuro opcional */
+        """)
+        # border: 1px ;
+        # border-radius: 10px; /* Borde redondeado */
+
+        # get_data
+        df = TQuestion.get_data_pandas()
+
+        # Elements options
+        self.set_layout_options_questions(df)
+
+        # Graphic
+        graphic_question = QuestionCanvas(df=df)
+        self.layout_graphic_questions.addWidget(graphic_question)
+
+    def set_layout_options_questions(self, df):
+        # Usamos QGridLayout para colocar los elementos como tarjetas
+        layout_options_questions = QtWidgets.QGridLayout()
+        layout_options_questions.setObjectName("layout_graphic_media")
+
+        self.frame_options_question.setLayout(layout_options_questions)
+
+        value_counts = df["expert"].value_counts()
+        items = [(label, count) for label, count in value_counts.items()]
+
+        self.add_elements_grid(items, layout_options_questions)
+
+    def add_elements_grid(self, items, layout):
+
         items_per_row = 3
 
-        # Usamos un bucle para agregar elementos dinámicamente
         row = 0
         col = 0
 
@@ -279,7 +326,7 @@ class Ui_GraphicsWindow(QMainWindow):
             container_layout = QVBoxLayout()
             container_layout.addWidget(label)
 
-            self.layout_options_media.addLayout(container_layout, row, col)
+            layout.addLayout(container_layout, row, col)
 
             col += 1
             if col == items_per_row:
