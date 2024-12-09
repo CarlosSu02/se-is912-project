@@ -22,6 +22,7 @@ from package.ui.styles import get_stylesheet
 from package.ui.toast_manager import toasts
 from package.ui.windows.config_window import ConfigWindow
 from package.ui.windows.dotenv_window import Ui_DotEnvWindow
+from package.ui.windows.graphics_window import Ui_GraphicsWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
 from package.utils.handle_dotenv import exists_dotenv
@@ -35,8 +36,8 @@ basic_qss = f"""
                     color: #FFF;
                     background-color: #858580;
                     border-radius: 20px;
-                    width: { VALUE_WH };
-                    height: { VALUE_WH };
+                    width: {VALUE_WH};
+                    height: {VALUE_WH};
                 }}
                 QPushButton:hover {{
                     background-color: #757575;
@@ -102,7 +103,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     def handle_window(self, reason):
         widget = self.parent()
         if reason != QSystemTrayIcon.ActivationReason.Trigger or not isinstance(
-            widget, QWidget
+                widget, QWidget
         ):
             return
 
@@ -120,6 +121,7 @@ class Window(Enum):
     QUESTION = "question"
     DOTENV = "dotenv"
     SPEECH = "speech"
+    GRAPHICS = "graphics"
 
 
 class MainWindow(QWidget):
@@ -129,6 +131,7 @@ class MainWindow(QWidget):
         Window.QUESTION: QuestionWindow,
         Window.DOTENV: Ui_DotEnvWindow,
         Window.SPEECH: Ui_SpeechWindow,
+        Window.GRAPHICS: Ui_GraphicsWindow,
     }
 
     def __init__(self):
@@ -236,6 +239,11 @@ class MainWindow(QWidget):
             text="up", on_click=lambda: self.setStyleSheet(get_stylesheet())
         )
 
+        button_graphics = CustomQPButton(
+            text="key",
+            on_click=lambda: self.handle_windows(Window.GRAPHICS),
+        )
+
         button_key = CustomQPButton(
             icon="./icons/key.svg",
             text="key",
@@ -249,6 +257,7 @@ class MainWindow(QWidget):
         button_close.setProperty("class", "close")
 
         # Add to Secondary layout
+        self.sec_layout.addWidget(button_graphics)
         self.sec_layout.addWidget(button_key)
         self.sec_layout.addWidget(button_close)
         self.sec_layout.addWidget(button_update)
