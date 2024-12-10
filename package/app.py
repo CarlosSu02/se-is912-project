@@ -26,7 +26,7 @@ from package.ui.windows.graphics_window import Ui_GraphicsWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
 from package.utils.handle_dotenv import exists_dotenv
-from package.core.enums import Icon
+from package.core.enums import Icon, Window
 from random import randint
 
 VALUE_WH = 40
@@ -82,15 +82,6 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         widget.show()
         widget.raise_()
-
-
-# Para listar las ventanas disponibles
-class Window(Enum):
-    CONFIG = "config"
-    QUESTION = "question"
-    DOTENV = "dotenv"
-    SPEECH = "speech"
-    GRAPHICS = "graphics"
 
 
 class MainWindow(QWidget):

@@ -3,14 +3,9 @@ import sqlite3
 import pandas as pd
 from db.connect_db import ConnectDB, Table
 from package.helpers.clients import current_client
+from package.core.enums import MediaType
 
 _get_data_query = "SELECT * FROM media_responses;"
-
-
-class MediaType(Enum):
-    SCREENSHOT = "screenshot"
-    IMAGE = "imagen"
-    DOCUMENT = "documento"
 
 
 class TMedia:
