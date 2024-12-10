@@ -172,7 +172,18 @@
                  <number>5</number>
                 </property>
                 <item row="0" column="0">
-                 <widget class="QComboBox" name="combobox_tables"/>
+                 <layout class="QVBoxLayout" name="vertical_layout_combobox_tables">
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="combobox_tables"/>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>

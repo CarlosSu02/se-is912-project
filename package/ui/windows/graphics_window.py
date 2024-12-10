@@ -387,11 +387,11 @@ class Ui_GraphicsWindow(QMainWindow):
         # self.vertical_layout_history.setContentsMargins(0, 10, 0, 0)
         self.vertical_layout_history.setObjectName("vertical_layout_history")
 
-        self.title_history = QtWidgets.QLabel(parent=self.tab_history)
-        self.title_history.setObjectName("title_history")
-        self.title_history.setText('Historial')
+        # self.title_history = QtWidgets.QLabel(parent=self.tab_history)
+        # self.title_history.setObjectName("title_history")
+        # self.title_history.setText('Historial')
 
-        self.vertical_layout_history.addWidget(self.title_history)
+        # self.vertical_layout_history.addWidget(self.title_history)
 
         self.frame_options_history = QtWidgets.QFrame(parent=self.tab_history)
         # self.frame_options_history.setMaximumSize(QtCore.QSize(16777215, 100))
@@ -410,6 +410,18 @@ class Ui_GraphicsWindow(QMainWindow):
         self.layout_grid_options_history.setObjectName("layout_grid_options_history")
 
         # combobox
+        ## vertical_layout_combobox_tables
+        self.vertical_layout_combobox_tables = QtWidgets.QVBoxLayout()
+
+        ## label combobox
+        self.label_combobox_tables = QtWidgets.QLabel()
+        self.label_combobox_tables.setText("Tablas")
+        self.label_combobox_tables.setFixedHeight(20)
+        self.label_combobox_tables.setStyleSheet("font-weight: bold;")
+
+        self.vertical_layout_combobox_tables.addWidget(self.label_combobox_tables)
+
+        ## combobox element
         self.combobox_tables = QtWidgets.QComboBox(parent=self.frame_options_history)
         self.combobox_tables.setGeometry(QtCore.QRect(20, 40, 281, 22))
         self.combobox_tables.setObjectName("combobox_tables")
@@ -424,8 +436,11 @@ class Ui_GraphicsWindow(QMainWindow):
 
         self.combobox_tables.currentTextChanged.connect(self.handle_change_combobox)
 
-        self.layout_grid_options_history.addWidget(self.combobox_tables, 0, 1, 1, 1)
+        self.vertical_layout_combobox_tables.addWidget(self.combobox_tables)
+
+        # self.layout_grid_options_history.addWidget(self.combobox_tables, 0, 1, 1, 1)
         # self.layout_grid_options_history.addWidget(self.title_history, 0, 0)
+        self.layout_grid_options_history.addLayout(self.vertical_layout_combobox_tables, 0, 0)
         self.horizontal_layout_table_history.addLayout(self.layout_grid_options_history)
 
         self.vertical_layout_history.addWidget(self.frame_options_history)
