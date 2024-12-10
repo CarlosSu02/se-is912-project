@@ -15,7 +15,7 @@ from package.helpers.clients import (
 )
 
 
-def handle_req_screeshot():
+def handle_req_screenshot():
     try:
         info = take_ss()
 

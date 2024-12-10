@@ -1,9 +1,8 @@
 import os
 import re
 from dotenv import load_dotenv, dotenv_values
-from package.constants.various import clients
+from package.core.constants import clients
 from package.utils.files import open_file
-
 
 # clients = {
 #     "Claude": "API_KEY_CLAUDE",
@@ -62,7 +61,7 @@ def set_env(key, value):
     # config = StringIO(f"{ key }={ value }")
     # load_dotenv(stream=config)
 
-    set = open_file(path=".env", mode="w", content=f"{ key }={ value }")
+    set = open_file(path=".env", mode="w", content=f"{key}={value}")
 
     # The error is handling in open_file function
     # toasts().success("Se agregó la API Key al archivo .env.")
@@ -80,7 +79,7 @@ def delete_key(key):
         return True
 
     except Exception as e:
-        print(f"Error: { e }")
+        print(f"Error: {e}")
         return False
 
 

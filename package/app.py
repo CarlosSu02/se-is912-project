@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
 from package.helpers.functions import (
     handle_req_document,
     handle_req_files_media,
-    handle_req_screeshot,
+    handle_req_screenshot,
 )
 from package.ui.custom_button import CustomQPButton
 from package.ui.styles import get_stylesheet
@@ -26,6 +26,7 @@ from package.ui.windows.graphics_window import Ui_GraphicsWindow
 from package.ui.windows.question_window import QuestionWindow
 from package.ui.windows.speech_window import Ui_SpeechWindow
 from package.utils.handle_dotenv import exists_dotenv
+from package.core.enums import Icon
 from random import randint
 
 VALUE_WH = 40
@@ -182,7 +183,7 @@ class MainWindow(QWidget):
         # button_show.clicked.connect(self.handle_sec_layout)
 
         button_show = CustomQPButton(
-            icon="./icons/widget.svg", on_click=self.handle_sec_layout
+            icon=Icon.WIDGET, on_click=self.handle_sec_layout
         )
 
         button_show.setProperty("class", "widget")
@@ -201,11 +202,11 @@ class MainWindow(QWidget):
 
     def functions(self):
         self.buttons_widget = [
-            ("./icons/screenshot.svg", "", self.handle_click_ss, True),
-            ("./icons/file-image.svg", "", self.load_imgs_from_files, True),
-            ("./icons/file-pdf.svg", "", self.load_docs_from_files, True),
+            (Icon.SS, "", self.handle_click_ss, True),
+            (Icon.IMAGE, "", self.load_imgs_from_files, True),
+            (Icon.PDF, "", self.load_docs_from_files, True),
             (
-                "./icons/user-question-alt.svg",
+                Icon.QUESTION,
                 "",
                 lambda: self.handle_windows(Window.QUESTION),
                 True,
@@ -224,20 +225,20 @@ class MainWindow(QWidget):
         )
 
         button_graphics = CustomQPButton(
-            icon="./icons/chart.svg",
+            icon=Icon.CHART,
             text="key",
             on_click=lambda: self.handle_windows(Window.GRAPHICS, content=True),
         )
 
         button_key = CustomQPButton(
-            icon="./icons/key.svg",
+            icon=Icon.KEY,
             text="key",
             on_click=lambda: self.handle_windows(Window.DOTENV),
         )
 
         # button_close
         button_close = CustomQPButton(
-            icon="./icons/close.svg", on_click=self.close_window
+            icon=Icon.CLOSE, on_click=self.close_window
         )
         button_close.setProperty("class", "close")
 
@@ -344,10 +345,11 @@ class MainWindow(QWidget):
 
         self.handle_speech(text)
 
+    # NOTE: search asyncio
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
-        text = handle_req_screeshot()
+        text = handle_req_screenshot()
 
         self.show()  # Open widget after take_ss
 

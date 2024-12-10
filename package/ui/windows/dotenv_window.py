@@ -34,7 +34,7 @@ from package.utils.handle_dotenv import (
     set_env,
     validate_key,
 )
-from package.constants.various import clients
+from package.core.constants import clients
 
 
 class Ui_DotEnvWindow(QWidget):
@@ -277,7 +277,7 @@ class Ui_DotEnvWindow(QWidget):
         self.close()
 
         self.dlg = CustomDialog(
-            content=f"¿Desea eliminar la API Key de { key }?",
+            content=f"¿Desea eliminar la API Key de {key}?",
             fn_accept=lambda: self.handle_delete_env_conf(key),
         )
 
@@ -297,7 +297,7 @@ class Ui_DotEnvWindow(QWidget):
 
     def enabled_items(self):
         if not hasattr(self.parent, "enabled_items") or not isinstance(
-            self.parent, QWidget
+                self.parent, QWidget
         ):
             return
 
