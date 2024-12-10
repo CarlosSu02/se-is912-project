@@ -45,7 +45,9 @@ class TTSThread(QThread):
         #         f"Voice ID: {voice.id} - Name: {voice.name} - Lang: {voice.languages}"
         #     )
 
-        self.engine.setProperty("voice", voices[2].id)
+        voice = voices[2].id if len(voices) > 2 else voices[1].id
+
+        self.engine.setProperty("voice", voice)
 
         self._stop_req = False
 
@@ -100,7 +102,7 @@ def text_to_file_audio(content, output_file):
     try:
         engine = pyttsx3.init()
 
-        engine.setProperty("voice", engine.getProperty("voices")[2].id)
+        engine.setProperty("voice", engine.getProperty("voices")[1].id)
 
         engine.save_to_file(content, output_file)
         engine.runAndWait()

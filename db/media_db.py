@@ -8,7 +8,7 @@ _get_data_query = "SELECT * FROM media_responses;"
 
 
 class MediaType(Enum):
-    SCREESHOT = "screenshot"
+    SCREENSHOT = "screenshot"
     IMAGE = "imagen"
     DOCUMENT = "documento"
 

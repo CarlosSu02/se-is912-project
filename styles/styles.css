@@ -107,6 +107,7 @@ QPushButton.not-rounded {
 
 /* news */
 QComboBox {
+  padding-left: 10px;  /* Space inside the combo box */
   height: 30px;
 }
 
@@ -136,3 +137,6 @@ QPlainTextEdit {
   background-color: #ff6060;
   border-radius: 5px;
 }
+
+/* new 2*/
+

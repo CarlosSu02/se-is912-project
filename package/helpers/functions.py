@@ -26,7 +26,7 @@ def handle_req_screeshot():
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
-        TMedia.add_element(type=MediaType.SCREESHOT, response=res)
+        TMedia.add_element(type=MediaType.SCREENSHOT, response=res)
 
         return res
 
