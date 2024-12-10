@@ -98,14 +98,8 @@ class QuestionCanvas(FigureCanvas):
         if df is None:
             return
 
-        # y = df["expert"].value_counts()
-        # x = y.index
         value_counts = df["expert"].value_counts()
 
-        # ax.set_xlabel("Tipo", labelpad=10)
-        # ax.set_ylabel("Total", labelpad=15)
-
-        # ax.bar(x, y, color=pastel)
         ax.pie(
             value_counts,
             autopct="%.0f%%",
@@ -118,9 +112,6 @@ class QuestionCanvas(FigureCanvas):
 
         # Ajustar automáticamente los márgenes
         fig.tight_layout()
-
-        # Valores enteros
-        # ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Ajustar tamaño dinámico según el contenedor
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -161,7 +152,7 @@ class Ui_GraphicsWindow(QMainWindow):
     def setupUi(self, GraphicsWindow):
         GraphicsWindow.setObjectName("GraphicsWindow")
         GraphicsWindow.resize(800, 600)
-        # GraphicsWindow.setWindowState(QtCore.Qt.WindowState.WindowMaximized)
+        GraphicsWindow.setWindowState(QtCore.Qt.WindowState.WindowMaximized)
 
         self.main_widget = QtWidgets.QWidget(parent=GraphicsWindow)
         self.main_widget.setObjectName("main_widget")
@@ -474,40 +465,18 @@ class Ui_GraphicsWindow(QMainWindow):
     def handle_change_data_table(self, table):
 
         df = self.df_media if re.match(table, Table.MEDIA.value, re.IGNORECASE | re.MULTILINE) else self.df_questions
-
         columns = list(df.columns)
-        # width = (80, 120, 120, 120, 10)
 
         self.table_widget.setColumnCount(len(columns))
         self.table_widget.setHorizontalHeaderLabels(columns)
 
-        # for i, w in enumerate(width):
-            #     self.table_widget.setColumnWidth(i, w)
-
         for i in range(len(columns)):
             self.table_widget.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeMode.Stretch)
 
-        # self.table_widget.setRowCount(0)
-
         data = df.values.tolist()
-        # data = [tuple(row) for row in df.values]
         self.table_widget.setRowCount(len(data))
 
         row = 0
-        # for id, datetime, type, response, client in data:
-        #     # self.table_widget.setRowCount(row + 1)
-        #
-        #     id_row = QtWidgets.QTableWidgetItem(str(id))
-        #     id_row.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter | QtCore.Qt.AlignmentFlag.AlignHCenter)
-        #
-        #     self.table_widget.setItem(row, 0, id_row)
-        #     self.table_widget.setItem(row, 1, QtWidgets.QTableWidgetItem(datetime))
-        #     self.table_widget.setItem(row, 2, QtWidgets.QTableWidgetItem(type))
-        #     self.table_widget.setItem(row, 3, QtWidgets.QTableWidgetItem(response))
-        #     self.table_widget.setItem(row, 4, QtWidgets.QTableWidgetItem(client))
-        #
-        #     row += 1
-
         for item in data:
             id_row = QtWidgets.QTableWidgetItem(str(item[0]))
             id_row.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter | QtCore.Qt.AlignmentFlag.AlignHCenter)
