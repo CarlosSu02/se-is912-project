@@ -42,31 +42,56 @@ class Ui_SpeechWindow(QWidget):
         self.text = text
         self.tts_thread = None
 
-        self.setupUi(self)
+        self.setupUi()
         self.show()
         self.init_tts()
 
-    def setupUi(self, SpeechWindow):
-        SpeechWindow.setObjectName("SpeechWindow")
-        SpeechWindow.resize(190, 95)
-        self.setFixedSize(190, 95)
+    def setupUi(self):
+        self.setObjectName("SpeechWindow")
 
-        SpeechWindow.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
 
-        self.horizontalLayoutWidget = QtWidgets.QWidget(parent=SpeechWindow)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(20, 10, 141, 70))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.main_layout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setObjectName("main_layout")
-        spacerItem = QtWidgets.QSpacerItem(
-            40,
-            20,
-            QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Minimum,
-        )
-        self.main_layout.addItem(spacerItem)
+        self.horizontal_layout = QtWidgets.QHBoxLayout(self)
+        self.horizontal_layout.setObjectName("horizontal_layout")
 
+        self.main_vertical_layout = QtWidgets.QVBoxLayout()
+        self.main_vertical_layout.setObjectName("main_vertical_layout")
+
+        self.textarea()
+        self.buttons()
+
+        self.setFixedSize(365, 556) if hasattr(self, "response_textarea") else self.setFixedSize(190, 95)
+
+        self.horizontal_layout.addLayout(self.main_vertical_layout)
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+        # self.topRightOffset(self)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("SpeechWindow", "Respuesta"))
+        self.label_stop.setText(_translate("SpeechWindow", "Parar"))
+        self.label_download.setText(_translate("SpeechWindow", "Descargar"))
+
+    def textarea(self):
+        self.response_textarea = QtWidgets.QPlainTextEdit(self)
+        # self.response_textarea.setEnabled(False)
+        self.response_textarea.setReadOnly(True)
+        self.response_textarea.setObjectName("response_textarea")
+        self.response_textarea.setPlainText(self.text)
+
+        self.main_vertical_layout.addWidget(self.response_textarea)
+
+    def buttons(self):
+        self.buttons_layout = QtWidgets.QHBoxLayout()
+        self.buttons_layout.setObjectName("buttons_layout")
+
+        spacer_start = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                             QtWidgets.QSizePolicy.Policy.Minimum)
+
+        self.buttons_layout.addItem(spacer_start)
         # Layout stop
         self.layout_stop = QtWidgets.QVBoxLayout()
         self.layout_stop.setObjectName("layout_stop")
@@ -92,21 +117,21 @@ class Ui_SpeechWindow(QWidget):
         self.layout_stop.addWidget(self.button_stop)
 
         # Label stop
-        self.label_stop = QtWidgets.QLabel(parent=self.horizontalLayoutWidget)
+        self.label_stop = QtWidgets.QLabel(self)
         self.label_stop.setObjectName("label_stop")
         # self.label_stop.setStyleSheet("align-text: center;")
         self.label_stop.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.layout_stop.addWidget(self.label_stop)
 
-        self.main_layout.addLayout(self.layout_stop)
-        spacerItem1 = QtWidgets.QSpacerItem(
+        self.buttons_layout.addLayout(self.layout_stop)
+        spacer_middle = QtWidgets.QSpacerItem(
             40,
             20,
             QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Minimum,
         )
-        self.main_layout.addItem(spacerItem1)
+        self.buttons_layout.addItem(spacer_middle)
 
         # Layout download
         self.layout_download = QtWidgets.QVBoxLayout()
@@ -135,23 +160,18 @@ class Ui_SpeechWindow(QWidget):
         self.layout_download.addWidget(self.button_download)
 
         # Label download
-        self.label_download = QtWidgets.QLabel(parent=self.horizontalLayoutWidget)
+        self.label_download = QtWidgets.QLabel(self)
         self.label_download.setObjectName("label_download")
         self.label_download.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.layout_download.addWidget(self.label_download)
-        self.main_layout.addLayout(self.layout_download)
+        self.buttons_layout.addLayout(self.layout_download)
 
-        self.retranslateUi(SpeechWindow)
-        QtCore.QMetaObject.connectSlotsByName(SpeechWindow)
+        spacer_end = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                           QtWidgets.QSizePolicy.Policy.Minimum)
+        self.buttons_layout.addItem(spacer_end)
 
-        self.topRightOffset(self)
-
-    def retranslateUi(self, SpeechWindow):
-        _translate = QtCore.QCoreApplication.translate
-        SpeechWindow.setWindowTitle(_translate("SpeechWindow", "Respuesta"))
-        self.label_stop.setText(_translate("SpeechWindow", "Parar"))
-        self.label_download.setText(_translate("SpeechWindow", "Descargar"))
+        self.main_vertical_layout.addLayout(self.buttons_layout)
 
     def topRightOffset(self, obj):
         fg = obj.frameGeometry()
@@ -250,17 +270,17 @@ class Ui_SpeechWindow(QWidget):
 
             file_name = list(os.path.basename(dir).split("."))
             file_name.pop()
-            file_name = f"{ os.path.dirname(dir) }/{ ".".join(file_name) }"
+            file_name = f"{os.path.dirname(dir)}/{".".join(file_name)}"
 
-            docx = f"{ file_name }.docx"
-            mp4 = f"{ file_name }.mp4"
+            docx = f"{file_name}.docx"
+            mp4 = f"{file_name}.mp4"
 
             text_to_docx(self.text, docx)
             text_to_file_audio(self.text, mp4)
 
             self.close()
 
-            toasts().success(f"Se guardaron los archivos en { os.path.dirname(dir) }.")
+            toasts().success(f"Se guardaron los archivos en {os.path.dirname(dir)}.")
 
         except Exception as e:
             toasts().error(e)
