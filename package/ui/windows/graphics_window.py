@@ -13,6 +13,7 @@ from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy, QLabel, QHBoxLayout, QVBoxLayout, QHeaderView, \
     QTableWidget
+from matplotlib.animation import FuncAnimation
 
 from db.media_db import TMedia
 from db.question_db import TQuestion
@@ -45,36 +46,51 @@ pastel = sns.color_palette("pastel")
 
 class MediaCanvas(FigureCanvas):
     def __init__(self, parent=None, df=None):
-        fig, ax = plt.subplots(1, dpi=100, figsize=(3, 3),
+        self.fig, self.ax = plt.subplots(1, dpi=100, figsize=(3, 3),
                                sharey=True, facecolor="none")
 
-        ax.set_facecolor("none")
-        fig.patch.set_facecolor("none")
+        self.ax.set_facecolor("none")
+        self.fig.patch.set_facecolor("none")
 
-        super().__init__(fig)
+        super().__init__(self.fig)
+
+        self.df = df
 
         # self.setFixedSize(400, 400)
 
-        if df is None:
+        self.draw_graphic(df)
+        # self.animation = FuncAnimation(fig=self.fig, func=self.animate, frames=100, interval=500)
+
+    # def animate(self, frame):
+    #     if self.df is not None:
+    #         self.draw_graphic(self.df)
+
+    def draw_graphic(self, df):
+
+        if df is None or df.empty:
             return
+
+        self.ax.clear()
 
         y = df["type"].value_counts()
         x = y.index
 
-        ax.set_xlabel("Tipo", labelpad=10)
-        ax.set_ylabel("Total", labelpad=15)
+        self.ax.set_xlabel("Tipo", labelpad=10)
+        self.ax.set_ylabel("Total", labelpad=15)
 
-        ax.bar(x, y, width=0.3, color=deep)
+        self.ax.bar(x, y, width=0.3, color=deep)
 
         # Ajustar automáticamente los márgenes
-        fig.tight_layout()
+        self.fig.tight_layout()
 
         # Valores enteros
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Ajustar tamaño dinámico según el contenedor
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.updateGeometry()
+
+        self.draw()
 
     def resizeEvent(self, event):
         """Ajustar el diseño al cambiar el tamaño de la ventana."""
@@ -85,37 +101,46 @@ class MediaCanvas(FigureCanvas):
 
 class QuestionCanvas(FigureCanvas):
     def __init__(self, parent=None, df=None):
-        fig, ax = plt.subplots(1, dpi=100, figsize=(3, 3),
+        self.fig, self.ax = plt.subplots(1, dpi=100, figsize=(3, 3),
                                sharey=True, facecolor="none")
 
-        ax.set_facecolor("none")
-        fig.patch.set_facecolor("none")
+        self.ax.set_facecolor("none")
+        self.fig.patch.set_facecolor("none")
 
-        super().__init__(fig)
+        super().__init__(self.fig)
 
         # self.setFixedSize(400, 400)
 
-        if df is None:
+        self.draw_graphic(df)
+
+
+    def draw_graphic(self, df):
+
+        if df is None or df.empty:
             return
+
+        self.ax.clear()
 
         value_counts = df["expert"].value_counts()
 
-        ax.pie(
+        self.ax.pie(
             value_counts,
             autopct="%.0f%%",
             # labels=value_counts.index,
             colors=pastel,
             explode=(value_counts == max(value_counts)) * 0.08,
         )
-        ax.legend(labels=[f"{label.capitalize()}: {count}" for label, count in value_counts.items()], loc="best",
+        self.ax.legend(labels=[f"{label.capitalize()}: {count}" for label, count in value_counts.items()], loc="best",
                   bbox_to_anchor=(0, 0), ncol=1)
 
         # Ajustar automáticamente los márgenes
-        fig.tight_layout()
+        self.fig.tight_layout()
 
         # Ajustar tamaño dinámico según el contenedor
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.updateGeometry()
+
+        self.draw()
 
     def resizeEvent(self, event):
         """Ajustar el diseño al cambiar el tamaño de la ventana."""
@@ -148,6 +173,7 @@ class Ui_GraphicsWindow(QMainWindow):
         self.setStyleSheet(get_stylesheet())
         self.setupUi(self)
         self.show()
+        self.in_real_time()
 
     def setupUi(self, GraphicsWindow):
         GraphicsWindow.setObjectName("GraphicsWindow")
@@ -249,6 +275,9 @@ class Ui_GraphicsWindow(QMainWindow):
             background-color: #2e2e2e; /* Fondo oscuro opcional */
         """)
 
+        # self.set_graphic_media()
+
+    # def set_graphic_media(self):
         # get_data
         # df = TMedia.get_data_pandas()
         df = self.df_media
@@ -262,8 +291,8 @@ class Ui_GraphicsWindow(QMainWindow):
         self.set_layout_options_media(df)
 
         # Graphic
-        graphic_media = MediaCanvas(df=df)
-        self.layout_graphic_media.addWidget(graphic_media)
+        self.graphic_media = MediaCanvas(df=df)
+        self.layout_graphic_media.addWidget(self.graphic_media)
 
     def set_layout_options_media(self, df):
         # Usamos QGridLayout para colocar los elementos como tarjetas
@@ -342,8 +371,8 @@ class Ui_GraphicsWindow(QMainWindow):
         self.set_layout_options_questions(df)
 
         # Graphic
-        graphic_question = QuestionCanvas(df=df)
-        self.layout_graphic_questions.addWidget(graphic_question)
+        self.graphic_question = QuestionCanvas(df=df)
+        self.layout_graphic_questions.addWidget(self.graphic_question)
 
     def set_layout_options_questions(self, df):
         # Usamos QGridLayout para colocar los elementos como tarjetas
@@ -515,7 +544,34 @@ class Ui_GraphicsWindow(QMainWindow):
                 col = 0
                 row += 1
 
+    def in_real_time(self):
+        self.timer = QTimer()
+        self.timer.setInterval(2500)
+
+        self.timer.timeout.connect(self.update_data)
+
+        self.timer.start()
+
+    def update_data(self):
+        self.df_media = TMedia.get_data_pandas()
+        self.df_questions = TQuestion.get_data_pandas()
+
+        # self.set_graphic_media()
+        # self.set_graphic_questions()
+        self.graphic_media.draw_graphic(self.df_media)
+        self.graphic_question.draw_graphic(self.df_questions)
+        self.handle_change_data_table(self.combobox_tables.currentText())
+
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
+        if hasattr(self, "timer") and self.timer.isActive():
+            self.timer.stop()
+
+        # if hasattr(self.graphic_media, "animation") and self.graphic_media.animation:
+        #     self.graphic_media.animation.event_source.stop()
+
+        # if hasattr(self.graphic_question, "animation") and self.graphic_question.animation:
+        #     self.graphic_question.animation.event_source.stop()
+
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
             return
 
