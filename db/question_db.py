@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-from db.connect_db import ConnectDB
+from db.connect_db import ConnectDB, Table
 from package.helpers.clients import current_client
 
 _get_data_query = "SELECT * FROM questions_responses;"
@@ -43,6 +43,7 @@ class TQuestion:
                 )
 
             df = pd.read_sql_query(_get_data_query, conn)
+            df.name = Table.QUESTIONS.value
 
             conn.close()
 

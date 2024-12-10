@@ -1,7 +1,7 @@
 from enum import Enum
 import sqlite3
 import pandas as pd
-from db.connect_db import ConnectDB
+from db.connect_db import ConnectDB, Table
 from package.helpers.clients import current_client
 
 _get_data_query = "SELECT * FROM media_responses;"
@@ -50,6 +50,7 @@ class TMedia:
                 )
 
             df = pd.read_sql_query(_get_data_query, conn)
+            df.name = Table.MEDIA.value
 
             conn.close()
 

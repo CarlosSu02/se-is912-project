@@ -7,7 +7,6 @@
 
 import re
 import typing
-from enum import Enum
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QCloseEvent
@@ -17,6 +16,7 @@ from matplotlib.animation import FuncAnimation
 
 from db.media_db import TMedia
 from db.question_db import TQuestion
+from db.connect_db import Table
 from package.ui.styles import get_stylesheet
 
 # Graphics
@@ -33,11 +33,6 @@ from matplotlib.ticker import MaxNLocator
 
 plt.style.use("dark_background")
 
-# Enum
-class Table(Enum):
-    MEDIA = "Media"
-    QUESTIONS = "Preguntas"
-
 # Colors
 deep = sns.color_palette("deep")
 colorblind = sns.color_palette("colorblind")
@@ -47,7 +42,7 @@ pastel = sns.color_palette("pastel")
 class MediaCanvas(FigureCanvas):
     def __init__(self, parent=None, df=None):
         self.fig, self.ax = plt.subplots(1, dpi=100, figsize=(3, 3),
-                               sharey=True, facecolor="none")
+                                         sharey=True, facecolor="none")
 
         self.ax.set_facecolor("none")
         self.fig.patch.set_facecolor("none")
@@ -66,7 +61,6 @@ class MediaCanvas(FigureCanvas):
     #         self.draw_graphic(self.df)
 
     def draw_graphic(self, df):
-
         if df is None or df.empty:
             return
 
@@ -102,7 +96,7 @@ class MediaCanvas(FigureCanvas):
 class QuestionCanvas(FigureCanvas):
     def __init__(self, parent=None, df=None):
         self.fig, self.ax = plt.subplots(1, dpi=100, figsize=(3, 3),
-                               sharey=True, facecolor="none")
+                                         sharey=True, facecolor="none")
 
         self.ax.set_facecolor("none")
         self.fig.patch.set_facecolor("none")
@@ -113,9 +107,7 @@ class QuestionCanvas(FigureCanvas):
 
         self.draw_graphic(df)
 
-
     def draw_graphic(self, df):
-
         if df is None or df.empty:
             return
 
@@ -131,7 +123,7 @@ class QuestionCanvas(FigureCanvas):
             explode=(value_counts == max(value_counts)) * 0.08,
         )
         self.ax.legend(labels=[f"{label.capitalize()}: {count}" for label, count in value_counts.items()], loc="best",
-                  bbox_to_anchor=(0, 0), ncol=1)
+                       bbox_to_anchor=(0, 0), ncol=1)
 
         # Ajustar automáticamente los márgenes
         self.fig.tight_layout()
@@ -166,7 +158,8 @@ class Ui_GraphicsWindow(QMainWindow):
             if self.window_key in self.parent.windows:
                 del self.parent.windows[self.window_key]
 
-            QTimer.singleShot(0, self.close) # este se ejecuta de forma asíncrona según el período de tiempo indicado, no genera error de recursión.
+            QTimer.singleShot(0,
+                              self.close)  # este se ejecuta de forma asíncrona según el período de tiempo indicado, no genera error de recursión.
 
             return
 
@@ -277,7 +270,7 @@ class Ui_GraphicsWindow(QMainWindow):
 
         # self.set_graphic_media()
 
-    # def set_graphic_media(self):
+        # def set_graphic_media(self):
         # get_data
         # df = TMedia.get_data_pandas()
         df = self.df_media
@@ -432,7 +425,7 @@ class Ui_GraphicsWindow(QMainWindow):
         self.combobox_tables.currentTextChanged.connect(self.handle_change_combobox)
 
         self.layout_grid_options_history.addWidget(self.combobox_tables, 0, 1, 1, 1)
-        self.layout_grid_options_history.addWidget(self.title_history, 0, 0)
+        # self.layout_grid_options_history.addWidget(self.title_history, 0, 0)
         self.horizontal_layout_table_history.addLayout(self.layout_grid_options_history)
 
         self.vertical_layout_history.addWidget(self.frame_options_history)
@@ -480,7 +473,8 @@ class Ui_GraphicsWindow(QMainWindow):
         # Oculta el header vertical
         self.table_widget.verticalHeader().setVisible(False)
 
-        self.table_widget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignVCenter | QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.table_widget.horizontalHeader().setDefaultAlignment(
+            QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignVCenter | QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Valor por defecto
         default = Table.MEDIA.value if self.tab_widget.isTabEnabled(0) else Table.QUESTIONS.value
@@ -493,8 +487,17 @@ class Ui_GraphicsWindow(QMainWindow):
 
     def handle_change_data_table(self, table):
 
+        spanish_header = {
+            Table.MEDIA.value: [
+                "id", "Fecha y hora", "Tipo", "Respuesta", "Plataforma"
+            ],
+            Table.QUESTIONS.value: [
+                "id", "Fecha y hora", "Prompt", "Pregunta", "Respuesta", "Plataforma"
+            ]
+        }
+
         df = self.df_media if re.match(table, Table.MEDIA.value, re.IGNORECASE | re.MULTILINE) else self.df_questions
-        columns = list(df.columns)
+        columns = spanish_header[df.name]
 
         self.table_widget.setColumnCount(len(columns))
         self.table_widget.setHorizontalHeaderLabels(columns)

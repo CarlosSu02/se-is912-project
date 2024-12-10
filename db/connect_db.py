@@ -1,7 +1,14 @@
 import os
 import re
 import sqlite3
+from enum import Enum
 from package.utils.files import open_file
+
+
+# Enum
+class Table(Enum):
+    MEDIA = "Media"
+    QUESTIONS = "Preguntas"
 
 
 class ConnectDB:
