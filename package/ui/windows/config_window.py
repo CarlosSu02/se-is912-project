@@ -20,11 +20,6 @@ from package.utils import HandleJson, config_path
 class ConfigWindow(QWidget):
     def __init__(self, parent, window_key):
         super().__init__()
-        # self.layout = QVBoxLayout()
-        # # self.label = QLabel("Another Window? % d" % randint(0, 100))
-        # self.label = QLabel("Prompts de expertos:")
-        # self.layout.addWidget(self.label)
-        # self.setLayout(self.layout)
 
         self.parent = parent
         self.window_key = window_key
@@ -58,25 +53,15 @@ class ConfigWindow(QWidget):
         self.items_combobox: list[str] = list(prompts.data.keys())
         self.default_prompt = self.config.get_value("expert")
 
-        # print(len(prompts.data.keys()))
-        # print(list(prompts.data.keys()))
-        # print(", ".join(prompts.data.keys()))
-
-        # label = QLabel(", ".join(prompts.data.keys()))
-
         self.container_prompts = QWidget()
         container_layout = QVBoxLayout(self.container_prompts)
 
         label = QLabel("Prompts de expertos:", self)
         label.setFont(QFont("Arial", 12))
-        # label.move(20, 50)
 
         combobox = QComboBox()
         combobox.addItems(prompts.data.keys())
         combobox.setFont(QFont("Arial", 12))
-        # combobox.setFixedSize(self.width(), 30)
-        # combobox.resize(combobox.sizeHint())
-        # combobox.move(90, 50)
         combobox.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         combobox.setFixedHeight(30)
 
@@ -100,7 +85,6 @@ class ConfigWindow(QWidget):
         container_layout.addWidget(combobox)
         self.container_prompts.setFixedHeight(label.height() + combobox.height())
 
-        # self.main_layout.addLayout(container_layout)
         self.main_layout.addWidget(self.container_prompts)
         self.main_layout.addStretch(0)
 
@@ -119,9 +103,6 @@ class ConfigWindow(QWidget):
         for name, style_class, fn in buttons:
             print(name, style_class)
             button = CustomQPButton(text=name, on_click=fn)
-            # button.setObjectName("not-rounded")
-            # button.setProperty("class", "not-rounded")
-            # button.setProperty("class", style_class)
             button.setProperty("class", f"{style_class} not-rounded")
             button.setFixedHeight(button_height)
             container_buttons_layout.addWidget(button)
@@ -130,13 +111,6 @@ class ConfigWindow(QWidget):
         button_cancel = CustomQPButton(
             text="Cancelar", on_click=lambda: print("cancel!")
         )
-
-        # container_buttons_layout.addWidget(button_save)
-        # container_buttons_layout.addWidget(button_cancel)
-
-        # self.container_buttons.setFixedHeight(
-        #     button_save.height() + button_cancel.height()
-        # )
 
         self.container_buttons.setFixedHeight(len(buttons) * button_height)
 
@@ -148,7 +122,6 @@ class ConfigWindow(QWidget):
         if value == self.default_prompt:
             return
 
-        print(f"combobox change: {value}")
         self.update_prompt = value
 
     def handle_click_save(self):
@@ -168,7 +141,6 @@ class ConfigWindow(QWidget):
         return
 
     def update_height(self):
-        print(self.container_buttons.height())
         self.main_layout.setSpacing(20)
 
         self.setFixedHeight(
@@ -177,17 +149,9 @@ class ConfigWindow(QWidget):
         return
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
-        # return super().closeEvent(a0)
-
-        print("close config window")
-        # self.parent.handle_windows()
-        # self.parent.handle_windows()
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
             return
 
-        # del self.parent.windows[self.window_key]
         self.parent.handle_windows(self.window_key)
-        # self.close()
 
-        # a0.accept()
         return super().closeEvent(a0)

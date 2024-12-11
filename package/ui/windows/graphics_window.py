@@ -208,7 +208,7 @@ class Ui_GraphicsWindow(QMainWindow):
 
     def retranslateUi(self, GraphicsWindow):
         _translate = QtCore.QCoreApplication.translate
-        GraphicsWindow.setWindowTitle(_translate("GraphicsWindow", "MainWindow"))
+        GraphicsWindow.setWindowTitle(_translate("GraphicsWindow", "Historial"))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_media), _translate("GraphicsWindow", "Media"))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_questions),
                                    _translate("GraphicsWindow", "Preguntas"))

@@ -80,15 +80,17 @@ class TTSThread(QThread):
 '''
 
 
-class TTSThread(QThread):
-    finished = pyqtSignal()
-    error = pyqtSignal(str)
+class TTSThread(
+    QThread):  # Hereda de QThread, para gestionar un hilo independiente, evita que la el programa se congele
+    finished = pyqtSignal()  # Señal de finalización
+    error = pyqtSignal(str)  # Señal de error
     stop_requested = pyqtSignal()  # Señal para detener el TTS
 
     def __init__(self, text=None):
         super().__init__()
-        self.text = text
-        self.engine = None
+
+        self.text = text  # Texto a decir
+        self.engine = None  # Variable de inicialización del motor
         self.stop_req = False  # Variable de control para detener el TTS
         self.stop_requested.connect(self.stop)  # Conectar la señal stop_requested al método stop
 
@@ -98,10 +100,12 @@ class TTSThread(QThread):
     def _initialize_engine(self):
         """Inicializa el motor TTS (Pyttsx3)"""
         self.engine = pyttsx3.init()
-        voices = self.engine.getProperty("voices")
+
+        voices = self.engine.getProperty("voices")  # Voces disponibles en la computadora
         rate = self.engine.getProperty("rate")
 
         voice = voices[2].id if len(voices) > 2 else voices[1].id
+
         self.engine.setProperty("voice", voice)
         self.engine.setProperty("rate", rate - 20)
 

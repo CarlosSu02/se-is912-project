@@ -52,6 +52,7 @@ class Ui_DotEnvWindow(QWidget):
     def setupUi(self, DotEnvWindow):
         DotEnvWindow.setObjectName("DotEnvWindow")
         DotEnvWindow.resize(500, 774)
+        DotEnvWindow.setWindowTitle("API Key")
 
         DotEnvWindow.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
 
@@ -109,7 +110,6 @@ class Ui_DotEnvWindow(QWidget):
         self.button_delete_key.setCursor(
             QtGui.QCursor(Qt.CursorShape.PointingHandCursor)
         )
-        # self.button_delete_key.setStyleSheet("height: 32px;")
         self.button_delete_key.setText("")
         self.button_delete_key.clicked.connect(self.handle_delete_env)
 

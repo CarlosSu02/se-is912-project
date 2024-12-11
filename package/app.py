@@ -55,12 +55,10 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.setContextMenu(menu)
 
         self.activated.connect(
-            # lambda reason: print(reason == QSystemTrayIcon.ActivationReason.Trigger)
             self.handle_window
         )
 
     def exit(self):
-        print("exit!")
         # self.exit()
         QApplication.quit()
 
@@ -94,9 +92,6 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        # self.apply_light_mode()
-
-        # self.setGeometry(0, 30, 100, 100)
         self.resize(WINDOW_SIZE_WH, WINDOW_SIZE_WH)
         self.setWindowTitle("First window PyQt6")
 
@@ -130,21 +125,6 @@ class MainWindow(QWidget):
         self.windows = {}
         self.show()
 
-    def apply_light_mode(self):
-        # Crear una paleta para el modo claro
-        palette = QPalette()
-
-        # Definir colores claros para la interfaz
-        palette.setColor(QPalette.ColorRole.Window, QColor(255, 255, 255))  # Fondo blanco
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))  # Texto negro
-        palette.setColor(QPalette.ColorRole.Button, QColor(255, 255, 255))  # Botones blancos
-        palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))  # Texto de botones negro
-        palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))  # Fondo de cajas de texto blanco
-        palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))  # Texto en cajas de texto negro
-
-        # Aplicar la paleta al resto de la aplicación
-        QApplication.instance().setPalette(palette)
-
     def topRightOffset(self):
         fg = self.frameGeometry()
         screen = self.screen()
@@ -154,20 +134,12 @@ class MainWindow(QWidget):
 
         available_geometry = screen.availableGeometry()
 
-        # print(available_geometry.topRight())
-
         x = available_geometry.right() - fg.width() - 10
         y = available_geometry.top() + 50
 
         self.move(x, y)
 
     def init_content(self):
-        # button_show = QPushButton(self)
-
-        # button_show.setCursor(Qt.CursorShape.PointingHandCursor)
-
-        # button_show.clicked.connect(self.handle_sec_layout)
-
         button_show = CustomQPButton(
             icon=Icon.WIDGET, on_click=self.handle_sec_layout
         )
@@ -232,7 +204,7 @@ class MainWindow(QWidget):
         self.sec_layout.addWidget(button_graphics)
         self.sec_layout.addWidget(button_key)
         self.sec_layout.addWidget(button_close)
-        self.sec_layout.addWidget(button_update)
+        # self.sec_layout.addWidget(button_update)
 
         self.main_layout.addStretch()
 
@@ -249,8 +221,8 @@ class MainWindow(QWidget):
 
     def close_window(self):
         self.handle_sec_layout()
-        # self.close()
-        QApplication.exit()  # NOTE: <- temporally
+        self.close()
+        # QApplication.exit()
 
     def clean_layout(self, layout):  # : QVBoxLayout | None
         if layout is None:
@@ -276,9 +248,6 @@ class MainWindow(QWidget):
         self.bgwidget.setFixedHeight(new_h)
 
     def handle_windows(self, window_key, *args, **kwargs):
-        # print(self.__windows_list)
-        # print(self.windows)
-
         exists_window = window_key in self.windows
 
         if not exists_window:
@@ -320,10 +289,6 @@ class MainWindow(QWidget):
                 self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
             )
 
-            # text = await handle_req_files_media(fileName)
-            #
-            # self.handle_speech(text)
-            # self.handle_speech(lambda: handle_req_files_media(fileName))
             self.handle_speech(FunctionCall(handle_req_files_media, fileName))
 
         except Exception as e:
@@ -337,12 +302,6 @@ class MainWindow(QWidget):
                 self, "Archivo", "", "Archivos de documentos (*.pdf)"
             )
 
-            # handle_req_image(fileName)
-            # text = await handle_req_document(fileName)
-            # print(text)
-            #
-            # self.handle_speech(text)
-            # self.handle_speech(lambda: handle_req_document(fileName))
             self.handle_speech(FunctionCall(handle_req_document, fileName))
 
         except Exception as e:
@@ -356,11 +315,6 @@ class MainWindow(QWidget):
         ss = take_ss()
         self.show()  # Open widget after take_ss
 
-        # text = await handle_req_screenshot(ss)
-
-        # self.handle_speech({"fn": handle_req_screenshot, "param": ss})
-        # self.handle_speech(lambda: handle_req_screenshot(ss))
-        # self.handle_windows(Window.SPEECH)
         self.handle_speech(FunctionCall(handle_req_screenshot, ss))
 
     # handle_speech => para manejo del tts global, ya que todas las ventanas y funciones podrían tener acceso a este método
@@ -382,37 +336,11 @@ class MainWindow(QWidget):
             toasts().error(e)
 
 
-def set_light_mode(app):
-    # Establecer el estilo 'Fusion'
-    app.setStyle('Fusion')
-
-    # Crear una paleta clara
-    palette = QPalette()
-
-    # Definir colores para el modo claro
-    palette.setColor(QPalette.ColorRole.Window, QColor(255, 255, 255))
-    palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))
-    palette.setColor(QPalette.ColorRole.Base, QColor(240, 240, 240))
-    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(255, 255, 255))
-    palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
-    palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
-    palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
-    palette.setColor(QPalette.ColorRole.Button, QColor(240, 240, 240))
-    palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
-    palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
-    palette.setColor(QPalette.ColorRole.Highlight, QColor(0, 120, 215))
-    palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
-
-    # Aplicar la paleta a la aplicación
-    app.setPalette(palette)
-
-
 # TODO: order code.
 app = QApplication(sys.argv)
 app.setQuitOnLastWindowClosed(
     False
 )  # Evita que la aplicación termine al cerrar la última ventana
-# set_light_mode(app)
 window = MainWindow()
 
 tray_icon = SystemTrayIcon(QIcon("./icons/widget.ico"), window)

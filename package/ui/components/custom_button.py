@@ -15,6 +15,3 @@ class CustomQPButton(QPushButton):
         self.setText(text) if icon is None else self.setIcon(QIcon(f"./icons/{icon.value}"))
         self.setCursor(cursor.value)
         self.clicked.connect(on_click)
-
-        # NOTE: check this!
-        # self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
