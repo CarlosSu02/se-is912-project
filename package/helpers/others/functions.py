@@ -15,9 +15,9 @@ from package.helpers.clients import (
 from package.core.enums import MediaType
 
 
-def handle_req_screenshot():
+def handle_req_screenshot(info):
     try:
-        info = take_ss()
+        # info = take_ss()
 
         if info is None:
             return
@@ -32,6 +32,7 @@ def handle_req_screenshot():
 
     except Exception as e:
         toasts().error(e)
+        print(e)
         return
 
 
@@ -40,7 +41,7 @@ def handle_req_files_media(fileName):
         info = handle_load_file(fileName)
 
         if info is None:
-            return
+            raise Exception("No se seleccionó un archivo multimedia.")
 
         res = vision_clients[str(current_client)](
             image_media_type=info["media_type"], base64_string=info["data"]
@@ -51,7 +52,8 @@ def handle_req_files_media(fileName):
         return res
 
     except Exception as e:
-        toasts().error(e)
+        # toasts().error(e)
+        raise Exception(e)
 
 
 def handle_req_document(fileName):
@@ -59,7 +61,7 @@ def handle_req_document(fileName):
         info = handle_load_file(fileName)
 
         if info is None:
-            return
+            raise Exception("No se seleccionó un PDF.")
 
         res = documents_clients[str(current_client)](
             document_media_type=info["media_type"], base64_string=info["data"]
@@ -70,7 +72,8 @@ def handle_req_document(fileName):
         return res
 
     except Exception as e:
-        toasts().error(e)
+        # toasts().error(e)
+        raise Exception(e)
 
 
 def handle_req_question(expert, prompt, text):
@@ -82,7 +85,8 @@ def handle_req_question(expert, prompt, text):
         return res
 
     except Exception as e:
-        toasts().error(e)
+        # toasts().error(e)
+        raise Exception(e)
 
 
 # Manejo de archivos general para no repetir codigo
@@ -99,5 +103,5 @@ def handle_load_file(fileName):
         return data
 
     except Exception as e:
-        toasts().error(str(e))
-        return
+        # toasts().error(str(e))
+        raise Exception(e)

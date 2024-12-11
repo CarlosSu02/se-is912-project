@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import QFileDialog
 
 from package.ui.components import CustomQPButton
 from package.ui.dialogs.toast_manager import toasts
-from package.utils import TTSThread, text_to_file_audio, text_to_docx
+from package.utils import TTSThread, text_to_file_audio, text_to_docx, markdown_to_text, convert_md_to_docx
 
 
 class Ui_SpeechWindow(QWidget):
@@ -194,7 +194,7 @@ class Ui_SpeechWindow(QWidget):
             print("El TTS ya está en ejecución.")
             return
 
-        self.tts_thread = TTSThread(self.text)
+        self.tts_thread = TTSThread(markdown_to_text(self.text))
         self.tts_thread.finished.connect(self.on_tts_finished)
         self.tts_thread.error.connect(self.on_tts_error)
 
@@ -273,8 +273,9 @@ class Ui_SpeechWindow(QWidget):
             docx = f"{file_name}.docx"
             mp4 = f"{file_name}.mp4"
 
-            text_to_docx(self.text, docx)
+            # text_to_docx(self.text, docx)
             text_to_file_audio(self.text, mp4)
+            convert_md_to_docx(self.text, docx)
 
             self.close()
 

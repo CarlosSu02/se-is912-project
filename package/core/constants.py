@@ -8,7 +8,7 @@ config_path = "./config/settings.json"
 
 extensions_media = {
     ".ico": "image/x-icon",
-    ".jpg": "image/jpg",
+    ".jpg": "image/jpeg",
     ".png": "image/png",
     ".bmp": "image/bmp",
     ".pdf": "application/pdf",

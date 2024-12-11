@@ -18,7 +18,7 @@ from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
 from package.ui.dialogs.toast_manager import toasts
 from package.ui.windows import Ui_DotEnvWindow, Ui_GraphicsWindow, Ui_SpeechWindow, ConfigWindow, QuestionWindow
-from package.utils import exists_dotenv
+from package.utils import exists_dotenv, take_ss
 from package.core.enums import Icon, Window
 
 VALUE_WH = 40
@@ -310,31 +310,43 @@ class MainWindow(QWidget):
                     layout_item.setEnabled(enabled)
 
     def load_imgs_from_files(self):
-        fileName, _ = QFileDialog.getOpenFileName(
-            self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
-        )
+        try:
 
-        text = handle_req_files_media(fileName)
+            fileName, _ = QFileDialog.getOpenFileName(
+                self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
+            )
 
-        self.handle_speech(text)
+            text = handle_req_files_media(fileName)
+
+            self.handle_speech(text)
+
+        except Exception as e:
+            toasts().error(e)
 
     def load_docs_from_files(self):
-        fileName, _ = QFileDialog.getOpenFileName(
-            self, "Archivo", "", "Archivos de documentos (*.pdf)"
-        )
+        try:
 
-        # handle_req_image(fileName)
-        text = handle_req_document(fileName)
+            fileName, _ = QFileDialog.getOpenFileName(
+                self, "Archivo", "", "Archivos de documentos (*.pdf)"
+            )
 
-        self.handle_speech(text)
+            # handle_req_image(fileName)
+            text = handle_req_document(fileName)
+            print(text)
+
+            self.handle_speech(text)
+
+        except Exception as e:
+            toasts().error(e)
 
     # NOTE: search asyncio
     def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
-        text = handle_req_screenshot()
-
+        ss = take_ss()
         self.show()  # Open widget after take_ss
+
+        text = handle_req_screenshot(ss)
 
         self.handle_speech(text)
         # self.handle_windows(Window.SPEECH)
