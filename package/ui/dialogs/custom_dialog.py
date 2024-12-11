@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt
 
-from package.ui.styles import get_stylesheet
+from package.ui.styles.styles import get_stylesheet
 
 
 class CustomDialog(QDialog):
@@ -25,7 +25,7 @@ class CustomDialog(QDialog):
         self.setStyleSheet(get_stylesheet())
 
         QBtn = (
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+                QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
 
         self.buttonBox = QDialogButtonBox(QBtn)

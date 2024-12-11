@@ -7,23 +7,22 @@
 
 import re
 import typing
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy, QLabel, QHBoxLayout, QVBoxLayout, QHeaderView, \
-    QTableWidget
-from matplotlib.animation import FuncAnimation
+from PyQt6.QtWidgets import QMainWindow, QWidget, QSizePolicy, QLabel, QVBoxLayout, QHeaderView
 
 from db.media_db import TMedia
 from db.question_db import TQuestion
-from db.connect_db import Table
 from package.ui.styles import get_stylesheet
+from package.core.enums import Table
+from package.core.constants import tables
 
 # Graphics
 import matplotlib
 import seaborn as sns
 
-from package.ui.toast_manager import toasts
+from package.ui.dialogs.toast_manager import toasts
 
 matplotlib.use("QtAgg")
 
@@ -426,7 +425,6 @@ class Ui_GraphicsWindow(QMainWindow):
         self.combobox_tables.setGeometry(QtCore.QRect(20, 40, 281, 22))
         self.combobox_tables.setObjectName("combobox_tables")
 
-        tables = [t.value for t in Table]
         self.combobox_tables.addItems(tables)
 
         self.combobox_tables.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)

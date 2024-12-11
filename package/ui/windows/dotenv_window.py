@@ -9,8 +9,8 @@
 import typing
 from PyQt6 import QtCore, QtGui
 from package.ui.dialogs.custom_dialog import CustomDialog
-from package.ui.toast_manager import toasts
-from qtpy.QtWidgets import (
+from package.ui.dialogs.toast_manager import toasts
+from PyQt6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLabel,
@@ -20,13 +20,12 @@ from qtpy.QtWidgets import (
     QSpacerItem,
     QVBoxLayout,
     QWidget,
-    QDialog,
 )
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtCore import Qt
-from package.ui.custom_button import CustomQPButton
+from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.utils.handle_dotenv import (
+from package.utils import (
     delete_key,
     exists_dotenv,
     get_env,

@@ -1,9 +1,8 @@
-from enum import Enum
 import sqlite3
 import pandas as pd
-from db.connect_db import ConnectDB, Table
+from db.connect_db import ConnectDB
 from package.helpers.clients import current_client
-from package.core.enums import MediaType
+from package.core.enums import MediaType, Table
 
 _get_data_query = "SELECT * FROM media_responses;"
 

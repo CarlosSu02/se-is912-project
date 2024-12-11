@@ -36,5 +36,10 @@ class MediaType(Enum):
     DOCUMENT = "documento"
 
 
+class Table(Enum):
+    MEDIA = "Media"
+    QUESTIONS = "Preguntas"
+
+
 class Cursor(Enum):
     POINTING = QtCore.Qt.CursorShape.PointingHandCursor

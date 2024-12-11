@@ -1,7 +1,8 @@
 # functions for claude client: vision, documents and text
 
 from anthropic import Anthropic
-from package.utils.handle_dotenv import get_env, clients
+from package.utils import get_env
+from package.core.constants import clients
 
 API_KEY_CLAUDE = get_env(clients["Claude"])
 MODEL_SONNET = "claude-3-5-sonnet-20241022"

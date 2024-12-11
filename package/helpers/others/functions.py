@@ -2,17 +2,17 @@
 
 
 from pyqttoast.os_utils import os
-from db.media_db import MediaType, TMedia
+from db.media_db import TMedia
 from db.question_db import TQuestion
-from package.helpers.screenshot import take_ss
-from package.ui.toast_manager import toasts
-from package.utils.files import encode_to_base64
+from package.utils import take_ss, encode_to_base64
+from package.ui.dialogs.toast_manager import toasts
 from package.helpers.clients import (
     current_client,
     vision_clients,
     text_clients,
     documents_clients,
 )
+from package.core.enums import MediaType
 
 
 def handle_req_screenshot():

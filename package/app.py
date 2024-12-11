@@ -1,33 +1,25 @@
 import sys
-import typing
-from enum import Enum
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QCloseEvent, QIcon, QPalette, QColor
+from PyQt6.QtGui import QAction, QIcon, QPalette, QColor
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
-    QLabel,
     QMenu,
     QSystemTrayIcon,
     QVBoxLayout,
     QWidget,
 )
-from package.helpers.functions import (
+from package.helpers.others.functions import (
     handle_req_document,
     handle_req_files_media,
     handle_req_screenshot,
 )
-from package.ui.custom_button import CustomQPButton
+from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.ui.toast_manager import toasts
-from package.ui.windows.config_window import ConfigWindow
-from package.ui.windows.dotenv_window import Ui_DotEnvWindow
-from package.ui.windows.graphics_window import Ui_GraphicsWindow
-from package.ui.windows.question_window import QuestionWindow
-from package.ui.windows.speech_window import Ui_SpeechWindow
-from package.utils.handle_dotenv import exists_dotenv
+from package.ui.dialogs.toast_manager import toasts
+from package.ui.windows import Ui_DotEnvWindow, Ui_GraphicsWindow, Ui_SpeechWindow, ConfigWindow, QuestionWindow
+from package.utils import exists_dotenv
 from package.core.enums import Icon, Window
-from random import randint
 
 VALUE_WH = 40
 WINDOW_SIZE_WH = 60  # w = 60, h = 60, equal...

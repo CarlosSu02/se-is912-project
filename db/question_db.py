@@ -1,7 +1,8 @@
 import sqlite3
 import pandas as pd
-from db.connect_db import ConnectDB, Table
+from db.connect_db import ConnectDB
 from package.helpers.clients import current_client
+from package.core.enums import Table
 
 _get_data_query = "SELECT * FROM questions_responses;"
 

@@ -1,34 +1,6 @@
 import pyttsx3
-import time
 from PyQt6.QtCore import QThread, pyqtSignal
-from package.ui.toast_manager import toasts
-
-"""
-engine = pyttsx3.init()
-
-
-def tts(text="Hola, esta es una prueba de pyttsx3."):
-    try:
-        engine.say(text)
-        engine.runAndWait()
-
-        if engine._inLoop:
-            engine.endLoop()
-
-    except Exception as e:
-        print(f"Error: {e}")
-        toasts().error(e)
-
-
-def tts_stop():
-    try:
-        engine.stop()
-
-    except Exception as e:
-        print(f"Error: { e }")
-
-        toasts().error(e)
-"""
+from package.ui.dialogs.toast_manager import toasts
 
 
 class TTSThread(QThread):
@@ -39,7 +11,10 @@ class TTSThread(QThread):
         super().__init__()
         self.text = text
         self.engine = pyttsx3.init()
+
         voices = self.engine.getProperty("voices")
+        rate = self.engine.getProperty("rate")
+
         # for voice in voices:
         #     print(
         #         f"Voice ID: {voice.id} - Name: {voice.name} - Lang: {voice.languages}"
@@ -48,6 +23,7 @@ class TTSThread(QThread):
         voice = voices[2].id if len(voices) > 2 else voices[1].id
 
         self.engine.setProperty("voice", voice)
+        self.engine.setProperty("rate", rate - 20)
 
         self._stop_req = False
 
@@ -110,6 +86,6 @@ def text_to_file_audio(content, output_file):
         engine.stop()
 
     except Exception as e:
-        print(f"Error: { e }")
+        print(f"Error: {e}")
 
         toasts().error(e)

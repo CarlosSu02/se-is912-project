@@ -1,15 +1,7 @@
 import os
 import json
 import base64
-
-config_path = "./config/settings.json"
-extensions = {
-    ".ico": "image/x-icon",
-    ".jpg": "image/jpg",
-    ".png": "image/png",
-    ".bmp": "image/bmp",
-    ".pdf": "application/pdf",
-}
+from package.core.constants import config_path, extensions_media
 
 
 def open_file(path=None, mode="r", content=None):
@@ -29,7 +21,6 @@ def open_file(path=None, mode="r", content=None):
 
     except Exception as e:
         print("Error: ", e)
-        # return f"Error: {e}"
         return
 
 
@@ -44,9 +35,11 @@ def encode_to_base64(fileName):
     base64_bytes = base64.standard_b64encode(file_content)
     base64_string = base64_bytes.decode("utf-8")
 
-    url = f"data:{ extensions[file_extension] };base64,{ base64_string }"
+    extension = extensions_media[file_extension]
 
-    return {"media_type": extensions[file_extension], "data": base64_string}
+    url = f"data:{extension};base64,{base64_string}"
+
+    return {"media_type": extension, "data": base64_string}
 
 
 class HandleJson:
@@ -76,9 +69,7 @@ class HandleJson:
         try:
             # if key in self.data is False:
             if not self.__exists_key(key):
-                raise KeyError(f"La clave { key } no se encuentra en el json.")
-
-            # print(self.data[key])
+                raise KeyError(f"La clave {key} no se encuentra en el json.")
 
             return self.data[key]
 
@@ -91,10 +82,6 @@ class HandleJson:
         try:
             self.data[key] = value
             self.update_file()
-
-            # with open(self.path, "w") as file:
-            #     json.dump(self.data, file, indent=4)
-            # json.dump(self.data.pop(key, None), file, indent=4)
 
         except KeyError as e:
             print(e)
@@ -113,17 +100,10 @@ class HandleJson:
         except KeyError as e:
             print(e)
 
-        # with open(self.path, "w") as file:
-        #     json.dump(self.data, file, indent=4)
-
     def delete_property(self, key: str):
         try:
             del self.data[key]
             self.update_file()
-
-            # with open(self.path, "w") as file:
-            #     json.dump(self.data, file, indent=4)
-            # json.dump(self.data.pop(key, None), file, indent=4)
 
         except KeyError as e:
             print(e)

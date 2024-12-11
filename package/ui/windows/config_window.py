@@ -1,7 +1,6 @@
 import typing
-from random import randint
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCloseEvent, QFont, QPixmap
+from PyQt6.QtGui import QCloseEvent, QFont
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -12,10 +11,10 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from package.ui.custom_button import CustomQPButton
+from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.ui.toast_manager import toasts
-from package.utils.files import HandleJson, config_path
+from package.ui.dialogs.toast_manager import toasts
+from package.utils import HandleJson, config_path
 
 
 class ConfigWindow(QWidget):
@@ -123,7 +122,7 @@ class ConfigWindow(QWidget):
             # button.setObjectName("not-rounded")
             # button.setProperty("class", "not-rounded")
             # button.setProperty("class", style_class)
-            button.setProperty("class", f"{ style_class } not-rounded")
+            button.setProperty("class", f"{style_class} not-rounded")
             button.setFixedHeight(button_height)
             container_buttons_layout.addWidget(button)
 
@@ -149,13 +148,13 @@ class ConfigWindow(QWidget):
         if value == self.default_prompt:
             return
 
-        print(f"combobox change: { value }")
+        print(f"combobox change: {value}")
         self.update_prompt = value
 
     def handle_click_save(self):
         if (
-            not hasattr(self, "update_prompt")
-            or self.default_prompt == self.update_prompt
+                not hasattr(self, "update_prompt")
+                or self.default_prompt == self.update_prompt
         ):
             return
 

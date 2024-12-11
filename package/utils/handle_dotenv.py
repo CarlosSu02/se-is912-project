@@ -2,33 +2,7 @@ import os
 import re
 from dotenv import load_dotenv, dotenv_values
 from package.core.constants import clients
-from package.utils.files import open_file
-
-# clients = {
-#     "Claude": "API_KEY_CLAUDE",
-#     # "ChatGPT": "API_KEY_CHATGPT",
-#     # "Gemini": "API_KEY_GEMINI",
-# }
-
-""" 
-# Alternativa para no repetir codigo
-from enum import Enum
-
-class Clients(Enum):
-    Claude = "API_KEY_CLAUDE"
-    ChatGPT = "chatgpt"
-
-clients = { c.name: c.value for c in Clients }
-
-print(list(Clients))
-print(clients)
-
-class Clients2(Enum):
-    CLAUDE = 'Claude', 'key'
-    CHATGPT = "chatgpt", 'name'
-
-print({ list(t.value)[0]: list(t.value)[1] for t in Clients2 })
-"""
+from . import open_file
 
 regex = r"^sk-[a-zA-Z0-9_-]{32,}$"
 
@@ -58,13 +32,7 @@ def set_env(key, value):
     if key is None or value is None:
         return
 
-    # config = StringIO(f"{ key }={ value }")
-    # load_dotenv(stream=config)
-
     set = open_file(path=".env", mode="w", content=f"{key}={value}")
-
-    # The error is handling in open_file function
-    # toasts().success("Se agregó la API Key al archivo .env.")
 
     return bool(set)
 

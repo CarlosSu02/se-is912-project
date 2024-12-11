@@ -9,18 +9,16 @@
 import math
 import os.path
 from posixpath import expanduser
-from sys import exception
 import typing
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtCore import QFile, pyqtSlot
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QFileDialog
 
-from package.ui.custom_button import CustomQPButton
-from package.ui.toast_manager import toasts
-from package.utils.docs import convert_md_to_docx, text_to_docx
-from package.utils.tts import TTSThread, text_to_file_audio
+from package.ui.components import CustomQPButton
+from package.ui.dialogs.toast_manager import toasts
+from package.utils import TTSThread, text_to_file_audio, text_to_docx
 
 
 class Ui_SpeechWindow(QWidget):

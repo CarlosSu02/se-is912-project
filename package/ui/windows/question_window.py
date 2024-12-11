@@ -10,11 +10,10 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from package.helpers.functions import handle_req_question
-from package.ui.custom_button import CustomQPButton
+from package.helpers.others.functions import handle_req_question
+from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
-from package.ui.toast_manager import toasts
-from package.utils.files import HandleJson
+from package.utils import HandleJson
 
 
 class QuestionWindow(QWidget):
