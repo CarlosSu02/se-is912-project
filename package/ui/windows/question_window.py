@@ -174,14 +174,14 @@ class QuestionWindow(QWidget):
 
         # toasts().success(f"Prompt: { prompt }, Pregunta: { question }")
 
-        text = await handle_req_question(expert, prompt, question)
+        # text = await handle_req_question(expert, prompt, question)
 
         if not hasattr(self.parent, "handle_speech") or not isinstance(
                 self.parent, QWidget
         ):
             return
 
-        self.parent.handle_speech(text)
+        self.parent.handle_speech(lambda: handle_req_question(expert, prompt, question))
 
         return
 

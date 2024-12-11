@@ -57,12 +57,12 @@ def get_client_claude():
     return Anthropic(api_key=API_KEY_CLAUDE)
 
 
-async def vision_claude(image_media_type, base64_string):
+def vision_claude(image_media_type, base64_string):
     # print(image_media_type)
     # print(base64_string)
     # return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
     # await asyncio.sleep(5)
-    return text
+    # return text
 
     client = get_client_claude()
 
@@ -85,13 +85,15 @@ async def vision_claude(image_media_type, base64_string):
         }
     ]
 
-    completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
+    # completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
 
-    return completion
+    # return completion
+
+    return client, max_tokens, messages, MODEL_OPUS
 
 
-async def documents_claude(document_media_type, base64_string):
-    return text
+def documents_claude(document_media_type, base64_string):
+    # return text
     client = Anthropic(
         default_headers={"anthropic-beta": "pdfs-2024-09-25"},
         api_key=API_KEY_CLAUDE
@@ -120,13 +122,15 @@ async def documents_claude(document_media_type, base64_string):
         }
     ]
 
-    completion = await get_completion_claude(client, max_tokens, messages, MODEL_SONNET)
+    # completion = await get_completion_claude(client, max_tokens, messages, MODEL_SONNET)
 
-    return completion
+    # return completion
+
+    return client, max_tokens, messages, MODEL_SONNET
 
 
-async def text_claude(prompt, text):
-    return text
+def text_claude(prompt, text):
+    # return text
     client = get_client_claude()
 
     max_tokens = 1024
@@ -137,9 +141,11 @@ async def text_claude(prompt, text):
         {"role": "user", "content": "Respuesta en formato de markdown."}
     ]
 
-    completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
+    # completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
 
-    return completion
+    # return completion
+
+    return client, max_tokens, messages, MODEL_OPUS
 
 
 # async def get_completion(client, tokens, messages, model_name):
@@ -164,4 +170,6 @@ async def get_completion_claude(client, max_tokens, messages, model_name):
 
 
 def get_completion_stream_claude(client, max_tokens, messages, model_name):
+    print(client)
+    print(max_tokens)
     return client.messages.stream(model=model_name, max_tokens=100, messages=messages)

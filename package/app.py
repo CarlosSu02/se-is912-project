@@ -319,9 +319,10 @@ class MainWindow(QWidget):
                 self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
             )
 
-            text = await handle_req_files_media(fileName)
-
-            self.handle_speech(text)
+            # text = await handle_req_files_media(fileName)
+            #
+            # self.handle_speech(text)
+            self.handle_speech(lambda: handle_req_files_media(fileName))
 
         except Exception as e:
             toasts().error(e)
@@ -335,10 +336,11 @@ class MainWindow(QWidget):
             )
 
             # handle_req_image(fileName)
-            text = await handle_req_document(fileName)
-            print(text)
-
-            self.handle_speech(text)
+            # text = await handle_req_document(fileName)
+            # print(text)
+            #
+            # self.handle_speech(text)
+            self.handle_speech(lambda: handle_req_document(fileName))
 
         except Exception as e:
             toasts().error(e)
@@ -353,7 +355,8 @@ class MainWindow(QWidget):
 
         # text = await handle_req_screenshot(ss)
 
-        self.handle_speech({"fn": handle_req_screenshot, "param": ss})
+        # self.handle_speech({"fn": handle_req_screenshot, "param": ss})
+        self.handle_speech(lambda: handle_req_screenshot(ss))
         # self.handle_windows(Window.SPEECH)
 
     # handle_speech => para manejo del tts global, ya que todas las ventanas y funciones podrían tener acceso a este método

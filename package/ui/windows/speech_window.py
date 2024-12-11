@@ -16,7 +16,7 @@ from PyQt6.QtCore import pyqtSlot, QTimer
 from PyQt6.QtWidgets import QFileDialog
 from qasync import asyncSlot
 
-from package.helpers.clients import current_client, get_clients
+from package.helpers.clients import current_client, get_clients, completions_stream_clients, vision_clients
 from package.ui.components import CustomQPButton
 from package.ui.dialogs.toast_manager import toasts
 from package.utils import TTSThread, text_to_file_audio, text_to_docx, markdown_to_text, convert_md_to_docx
@@ -25,8 +25,11 @@ from package.utils import TTSThread, text_to_file_audio, text_to_docx, markdown_
 class Ui_SpeechWindow(QWidget):
     _tts_active = False
     _active_instance = None
+    type_req = {
+        "vision": vision_clients
+    }
 
-    def __init__(self, parent, window_key, text):
+    def __init__(self, parent, window_key, function):
         super().__init__()
 
         if Ui_SpeechWindow._tts_active:
@@ -38,7 +41,8 @@ class Ui_SpeechWindow(QWidget):
 
         self.parent = parent
         self.window_key = window_key
-        self.text = text
+        self.function = function
+        self.text = ""
         self.tts_thread = None
 
         self.setupUi()
@@ -58,13 +62,14 @@ class Ui_SpeechWindow(QWidget):
         await self.stream_with_claude(messages)
 
     async def stream_with_claude(self, messages):
-        client = get_clients[current_client]()
+        # client = get_clients[current_client]()
 
-        with client.messages.stream(
-                max_tokens=100,
-                messages=messages,
-                model="claude-3-opus-20240229",  # Modelo más rápido
-        ) as stream:
+        # client, max_tokens, messages, model_name = self.text['fn'](self.text['param'])
+        client, max_tokens, messages, model_name = self.function()
+        print(client, max_tokens, model_name)
+        # print(completions_stream_clients[current_client](client, max_tokens, messages, model_name))
+
+        with completions_stream_clients[current_client](client, max_tokens, messages, model_name) as stream:
             self.show()
             complete_text = ""
             for chunk in stream.text_stream:
@@ -79,19 +84,20 @@ class Ui_SpeechWindow(QWidget):
                 await self.handle_tts(complete_text)
 
     async def handle_tts(self, text):
-        self.response_textarea.setPlainText(self.response_textarea.toPlainText() + f"{text}")
+        self.response_textarea.setPlainText(self.response_textarea.toPlainText() + text)
+        self.text += text
 
         if not self.tts_thread.stop_req:
-            self.tts_thread.text = text  #
+            self.tts_thread.text = markdown_to_text(text)
             self.tts_thread.restart_engine()
             self.tts_thread.start()
 
             await self.wait_for_tts(self.tts_thread)
 
-    @pyqtSlot()
-    def stop_tts(self):
-        if hasattr(self, 'tts_thread'):
-            self.tts_thread.stop_requested.emit()  # Emitir señal para detener el TTS
+    # @pyqtSlot()
+    # def stop_tts(self):
+    #     if hasattr(self, 'tts_thread'):
+    #         self.tts_thread.stop_requested.emit()  # Emitir señal para detener el TTS
 
     async def wait_for_tts(self, tts_thread):
         tts_event = asyncio.Event()
@@ -150,7 +156,7 @@ class Ui_SpeechWindow(QWidget):
 
         # Button stop
         # self.button_stop = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget)
-        self.button_stop = CustomQPButton(on_click=self.stop_tts)
+        self.button_stop = CustomQPButton(on_click=self.tts_stop)
         self.button_stop.setMinimumSize(QtCore.QSize(0, 48))
         self.button_stop.setStyleSheet("border:none; background-color: transparent;")
         self.button_stop.setText("")
@@ -255,12 +261,13 @@ class Ui_SpeechWindow(QWidget):
         # self.tts_thread.stop()  # En dado caso se encuentre en el loop
         self.tts_thread.start()
 
+    @pyqtSlot()
     def tts_stop(self):
         if self.tts_thread is None:
             return
 
         if self.tts_thread.isRunning():
-            self.tts_thread.stop()
+            self.tts_thread.stop_requested.emit()  # Emitir señal para detener el TTS
             self.tts_thread.quit()
 
     @pyqtSlot()
@@ -328,7 +335,7 @@ class Ui_SpeechWindow(QWidget):
             mp4 = f"{file_name}.mp4"
 
             # text_to_docx(self.text, docx)
-            text_to_file_audio(self.text, mp4)
+            text_to_file_audio(markdown_to_text(self.text), mp4)
             convert_md_to_docx(self.text, docx)
 
             self.close()
@@ -340,7 +347,7 @@ class Ui_SpeechWindow(QWidget):
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:
         self.tts_stop()
-        self.stop_tts()
+        # self.stop_tts()
 
         if not hasattr(self.parent, "windows") or not isinstance(self.parent, QWidget):
             return
