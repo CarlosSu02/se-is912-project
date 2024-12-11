@@ -10,6 +10,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qasync import asyncSlot
+
 from package.helpers.others.functions import handle_req_question
 from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
@@ -158,7 +160,8 @@ class QuestionWindow(QWidget):
 
         self.button_save.setEnabled(not condition)
 
-    def handle_send(self):
+    @asyncSlot()
+    async def handle_send(self):
         print(self.question_area.toPlainText())
         print(self.current_prompt)
 
@@ -171,7 +174,7 @@ class QuestionWindow(QWidget):
 
         # toasts().success(f"Prompt: { prompt }, Pregunta: { question }")
 
-        text = handle_req_question(expert, prompt, question)
+        text = await handle_req_question(expert, prompt, question)
 
         if not hasattr(self.parent, "handle_speech") or not isinstance(
                 self.parent, QWidget

@@ -15,14 +15,14 @@ from package.helpers.clients import (
 from package.core.enums import MediaType
 
 
-def handle_req_screenshot(info):
+async def handle_req_screenshot(info):
     try:
         # info = take_ss()
 
         if info is None:
             return
 
-        res = vision_clients[str(current_client)](
+        res = await vision_clients[str(current_client)](
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
@@ -76,9 +76,9 @@ def handle_req_document(fileName):
         raise Exception(e)
 
 
-def handle_req_question(expert, prompt, text):
+async def handle_req_question(expert, prompt, text):
     try:
-        res = text_clients[str(current_client)](prompt, text)
+        res = await text_clients[str(current_client)](prompt, text)
 
         TQuestion.add_element(expert, text, res)
 

@@ -9,6 +9,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qasync import asyncSlot
+
 from package.helpers.others.functions import (
     handle_req_document,
     handle_req_files_media,
@@ -309,21 +311,23 @@ class MainWindow(QWidget):
                 if prop:
                     layout_item.setEnabled(enabled)
 
-    def load_imgs_from_files(self):
+    @asyncSlot()
+    async def load_imgs_from_files(self):
         try:
 
             fileName, _ = QFileDialog.getOpenFileName(
                 self, "Archivo", "", "Archivos de imagen (*.jpg *.png *.ico *.bmp)"
             )
 
-            text = handle_req_files_media(fileName)
+            text = await handle_req_files_media(fileName)
 
             self.handle_speech(text)
 
         except Exception as e:
             toasts().error(e)
 
-    def load_docs_from_files(self):
+    @asyncSlot()
+    async def load_docs_from_files(self):
         try:
 
             fileName, _ = QFileDialog.getOpenFileName(
@@ -331,7 +335,7 @@ class MainWindow(QWidget):
             )
 
             # handle_req_image(fileName)
-            text = handle_req_document(fileName)
+            text = await handle_req_document(fileName)
             print(text)
 
             self.handle_speech(text)
@@ -340,13 +344,14 @@ class MainWindow(QWidget):
             toasts().error(e)
 
     # NOTE: search asyncio
-    def handle_click_ss(self):
+    @asyncSlot()
+    async def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
         ss = take_ss()
         self.show()  # Open widget after take_ss
 
-        text = handle_req_screenshot(ss)
+        text = await handle_req_screenshot(ss)
 
         self.handle_speech(text)
         # self.handle_windows(Window.SPEECH)
