@@ -281,8 +281,7 @@ class MainWindow(QWidget):
                 if prop:
                     layout_item.setEnabled(enabled)
 
-    @asyncSlot()
-    async def load_imgs_from_files(self):
+    def load_imgs_from_files(self):
         try:
 
             fileName, _ = QFileDialog.getOpenFileName(
@@ -294,8 +293,7 @@ class MainWindow(QWidget):
         except Exception as e:
             toasts().error(e)
 
-    @asyncSlot()
-    async def load_docs_from_files(self):
+    def load_docs_from_files(self):
         try:
 
             fileName, _ = QFileDialog.getOpenFileName(
@@ -308,8 +306,7 @@ class MainWindow(QWidget):
             toasts().error(e)
 
     # NOTE: search asyncio
-    @asyncSlot()
-    async def handle_click_ss(self):
+    def handle_click_ss(self):
         self.close()  # Close widget before take_ss
 
         ss = take_ss()

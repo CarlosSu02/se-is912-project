@@ -52,39 +52,40 @@ class Ui_SpeechWindow(QWidget):
 
     @asyncSlot()
     async def start_tts(self):
-        messages = [{"role": "user", "content": "resume las historia de python"}]
 
         self.tts_thread = TTSThread()  # Crear solo una instancia del hilo TTS
         self.tts_thread.start()  # Inicia el hilo TTS
 
-        await self.get_completion_and_speak(messages)
+        await self.stream_with_claude()
 
-    async def get_completion_and_speak(self, messages):
-        await self.stream_with_claude(messages)
-
-    async def stream_with_claude(self, messages):
+    async def stream_with_claude(self):
         # client = get_clients[current_client]()
 
-        # client, max_tokens, messages, model_name = self.text['fn'](self.text['param'])
-        client, max_tokens, messages, model_name, fn_save = self.function.exec()
-        # print(completions_stream_clients[current_client](client, max_tokens, messages, model_name))
+        try:
+            # client, max_tokens, messages, model_name = self.text['fn'](self.text['param'])
+            client, max_tokens, messages, model_name, fn_save = self.function.exec()
+            # print(completions_stream_clients[current_client](client, max_tokens, messages, model_name))
 
-        async with completions_stream_clients[current_client](client, max_tokens, messages, model_name) as stream:
-            self.show()
-            complete_text = ""
+            async with completions_stream_clients[current_client](client, max_tokens, messages, model_name) as stream:
+                self.show()
+                complete_text = ""
 
-            async for chunk in stream.text_stream:
-                # print(f"Texto recibido: {chunk}")
-                complete_text += chunk
+                async for chunk in stream.text_stream:
+                    # print(f"Texto recibido: {chunk}")
+                    complete_text += chunk
 
-                if len(complete_text.split()) >= 10:
+                    if len(complete_text.split()) >= 10:
+                        await self.handle_tts(complete_text)
+                        complete_text = ""
+
+                if complete_text:
                     await self.handle_tts(complete_text)
-                    complete_text = ""
 
-            if complete_text:
-                await self.handle_tts(complete_text)
+            fn_save.save(self.text)
 
-        fn_save.save(self.text)
+        except Exception as e:
+            toasts().error(e)
+            self.close()
 
     async def handle_tts(self, text):
         self.response_textarea.setPlainText(self.response_textarea.toPlainText() + text)
@@ -270,6 +271,7 @@ class Ui_SpeechWindow(QWidget):
             return
 
         if self.tts_thread.isRunning():
+            self.tts_thread.stop()
             self.tts_thread.stop_requested.emit()  # Emitir señal para detener el TTS
             self.tts_thread.quit()
 

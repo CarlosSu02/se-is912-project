@@ -288,15 +288,16 @@ class Ui_GraphicsWindow(QMainWindow):
 
     def set_layout_options_media(self, df):
         # Usamos QGridLayout para colocar los elementos como tarjetas
-        layout_options_media = QtWidgets.QGridLayout()
-        layout_options_media.setObjectName("layout_graphic_media")
+        self.layout_options_media = QtWidgets.QGridLayout()
+        self.layout_options_media.setObjectName("layout_graphic_media")
 
-        self.frame_options_media.setLayout(layout_options_media)
+        self.frame_options_media.setLayout(self.layout_options_media)
 
+    def grid_layout_options_media(self, df):
         value_counts = df["type"].value_counts()
         items = [(label, count) for label, count in value_counts.items()]
 
-        self.add_elements_grid(items, layout_options_media)
+        self.add_elements_grid(items, self.layout_options_media)
 
     def set_tab_questions(self):
         # tab_questions
@@ -572,10 +573,11 @@ class Ui_GraphicsWindow(QMainWindow):
         self.df_media = TMedia.get_data_pandas()
         self.df_questions = TQuestion.get_data_pandas()
 
-        # self.set_graphic_media()
-        # self.set_graphic_questions()
+        self.grid_layout_options_media(self.df_media)
         self.graphic_media.draw_graphic(self.df_media)
+
         self.graphic_question.draw_graphic(self.df_questions)
+
         self.handle_change_data_table(self.combobox_tables.currentText())
 
     def closeEvent(self, a0: typing.Optional[QCloseEvent]) -> None:

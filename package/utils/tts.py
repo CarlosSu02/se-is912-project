@@ -158,7 +158,7 @@ class TTSThread(
         try:
             if self.engine:
                 self.engine.stop()
-            del self.engine
+            # del self.engine
             self.engine = None
         except Exception as e:
             self.error.emit(str(e))
