@@ -19,7 +19,8 @@ def take_ss():
         # with open("./ss.txt", "w") as f:
         #     f.write(url)
 
-        return {"data": ss_base64, "media_type": "image/png"}
+        # return {"data": ss_base64, "media_type": "image/png"}
+        return ss_base64, "image/png"
 
     except Exception as e:
         print(f"Error: {e}")

@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
 )
 from qasync import asyncSlot
 
+from package.core.constants import FunctionCall
 from package.helpers.others.functions import handle_req_question
 from package.ui.components import CustomQPButton
 from package.ui.styles import get_stylesheet
@@ -162,8 +163,8 @@ class QuestionWindow(QWidget):
 
     @asyncSlot()
     async def handle_send(self):
-        print(self.question_area.toPlainText())
-        print(self.current_prompt)
+        # print(self.question_area.toPlainText())
+        # print(self.current_prompt)
 
         question = self.question_area.toPlainText()
         expert = self.current_prompt
@@ -181,7 +182,7 @@ class QuestionWindow(QWidget):
         ):
             return
 
-        self.parent.handle_speech(lambda: handle_req_question(expert, prompt, question))
+        self.parent.handle_speech(FunctionCall(handle_req_question, (expert, prompt, question)))
 
         return
 

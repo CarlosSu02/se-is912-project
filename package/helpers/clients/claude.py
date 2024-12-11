@@ -2,7 +2,7 @@
 import asyncio
 from stringprep import b1_set
 
-from anthropic import Anthropic
+from anthropic import Anthropic, AsyncAnthropic
 from package.utils import get_env
 from package.core.constants import clients
 
@@ -54,7 +54,7 @@ Python ha recorrido un largo camino desde sus humildes comienzos hace más de tr
 
 
 def get_client_claude():
-    return Anthropic(api_key=API_KEY_CLAUDE)
+    return AsyncAnthropic(api_key=API_KEY_CLAUDE)
 
 
 def vision_claude(image_media_type, base64_string):
@@ -94,7 +94,7 @@ def vision_claude(image_media_type, base64_string):
 
 def documents_claude(document_media_type, base64_string):
     # return text
-    client = Anthropic(
+    client = AsyncAnthropic(
         default_headers={"anthropic-beta": "pdfs-2024-09-25"},
         api_key=API_KEY_CLAUDE
     )
@@ -170,6 +170,8 @@ async def get_completion_claude(client, max_tokens, messages, model_name):
 
 
 def get_completion_stream_claude(client, max_tokens, messages, model_name):
-    print(client)
-    print(max_tokens)
-    return client.messages.stream(model=model_name, max_tokens=100, messages=messages)
+    return client.messages.stream(model=model_name, max_tokens=max_tokens, messages=messages)
+
+# def get_final_message_claude():
+#       accumulated = await stream.get_final_message()
+#         print(accumulated.content[0].text

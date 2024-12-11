@@ -114,17 +114,10 @@ class TTSThread(QThread):
 
             # Verificar si el texto se ha asignado correctamente
             if not self.text:
-                print("Error: no hay texto para leer.")
                 return
 
-            # Imprimir el texto antes de iniciar el TTS
-            print("Iniciando TTS con el texto:", self.text)
-
-            # Conectar para escuchar la palabra que empieza a ser pronunciada
             self.engine.connect("started-word", self.check_stop)
 
-            # Pronunciar el texto
-            print("TTS:", self.text)  # Depuración adicional
             self.engine.say(self.text)
             self.engine.runAndWait()
 

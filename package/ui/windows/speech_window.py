@@ -16,6 +16,7 @@ from PyQt6.QtCore import pyqtSlot, QTimer
 from PyQt6.QtWidgets import QFileDialog
 from qasync import asyncSlot
 
+from package.core.constants import FunctionCall
 from package.helpers.clients import current_client, get_clients, completions_stream_clients, vision_clients
 from package.ui.components import CustomQPButton
 from package.ui.dialogs.toast_manager import toasts
@@ -29,7 +30,7 @@ class Ui_SpeechWindow(QWidget):
         "vision": vision_clients
     }
 
-    def __init__(self, parent, window_key, function):
+    def __init__(self, parent, window_key, function: FunctionCall):
         super().__init__()
 
         if Ui_SpeechWindow._tts_active:
@@ -65,23 +66,25 @@ class Ui_SpeechWindow(QWidget):
         # client = get_clients[current_client]()
 
         # client, max_tokens, messages, model_name = self.text['fn'](self.text['param'])
-        client, max_tokens, messages, model_name = self.function()
-        print(client, max_tokens, model_name)
+        client, max_tokens, messages, model_name, fn_save = self.function.exec()
         # print(completions_stream_clients[current_client](client, max_tokens, messages, model_name))
 
-        with completions_stream_clients[current_client](client, max_tokens, messages, model_name) as stream:
+        async with completions_stream_clients[current_client](client, max_tokens, messages, model_name) as stream:
             self.show()
             complete_text = ""
-            for chunk in stream.text_stream:
+
+            async for chunk in stream.text_stream:
                 # print(f"Texto recibido: {chunk}")
                 complete_text += chunk
 
-                if len(complete_text.split()) >= 5:
+                if len(complete_text.split()) >= 10:
                     await self.handle_tts(complete_text)
                     complete_text = ""
 
             if complete_text:
                 await self.handle_tts(complete_text)
+
+        fn_save.save(self.text)
 
     async def handle_tts(self, text):
         self.response_textarea.setPlainText(self.response_textarea.toPlainText() + text)

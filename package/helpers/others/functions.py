@@ -4,6 +4,7 @@
 from pyqttoast.os_utils import os
 from db.media_db import TMedia
 from db.question_db import TQuestion
+from package.core.constants import FunctionCall
 from package.utils import take_ss, encode_to_base64
 from package.ui.dialogs.toast_manager import toasts
 from package.helpers.clients import (
@@ -15,20 +16,20 @@ from package.helpers.clients import (
 from package.core.enums import MediaType
 
 
-def handle_req_screenshot(info):
+def handle_req_screenshot(data, media_type):
     try:
         # info = take_ss()
 
-        if info is None:
+        if data is None or media_type is None:
             return
 
-        res = vision_clients[str(current_client)](
-            image_media_type=info["media_type"], base64_string=info["data"]
+        base = vision_clients[str(current_client)](
+            image_media_type=media_type, base64_string=data
         )
 
-        TMedia.add_element(type=MediaType.SCREENSHOT, response=res)
+        # TMedia.add_element(type=MediaType.SCREENSHOT, response=res)
 
-        return res
+        return *base, FunctionCall(TMedia.add_element, MediaType.SCREENSHOT)
 
     except Exception as e:
         toasts().error(e)
@@ -47,9 +48,9 @@ def handle_req_files_media(fileName):
             image_media_type=info["media_type"], base64_string=info["data"]
         )
 
-        TMedia.add_element(type=MediaType.IMAGE, response=res)
+        # TMedia.add_element(type=MediaType.IMAGE, response=res)
 
-        return res
+        return *res, FunctionCall(TMedia.add_element, MediaType.IMAGE)
 
     except Exception as e:
         # toasts().error(e)
@@ -63,13 +64,13 @@ def handle_req_document(fileName):
         if info is None:
             raise Exception("No se seleccionó un PDF.")
 
-        res = documents_clients[str(current_client)](
+        base = documents_clients[str(current_client)](
             document_media_type=info["media_type"], base64_string=info["data"]
         )
 
-        TMedia.add_element(type=MediaType.DOCUMENT, response=res)
+        # TMedia.add_element(type=MediaType.DOCUMENT, response=res)
 
-        return res
+        return *base, FunctionCall(TMedia.add_element, MediaType.DOCUMENT)
 
     except Exception as e:
         # toasts().error(e)
@@ -78,11 +79,11 @@ def handle_req_document(fileName):
 
 def handle_req_question(expert, prompt, text):
     try:
-        res = text_clients[str(current_client)](prompt, text)
+        base = text_clients[str(current_client)](prompt, text)
 
-        TQuestion.add_element(expert, text, res)
+        # TQuestion.add_element(expert, text)
 
-        return res
+        return *base, FunctionCall(TQuestion.add_element, (expert, text))
 
     except Exception as e:
         # toasts().error(e)
