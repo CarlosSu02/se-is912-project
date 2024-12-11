@@ -53,7 +53,7 @@ Python ha recorrido un largo camino desde sus humildes comienzos hace más de tr
 """
 
 
-def get_client():
+def get_client_claude():
     return Anthropic(api_key=API_KEY_CLAUDE)
 
 
@@ -64,7 +64,7 @@ async def vision_claude(image_media_type, base64_string):
     # await asyncio.sleep(5)
     return text
 
-    client = get_client()
+    client = get_client_claude()
 
     max_tokens = 1024
 
@@ -85,7 +85,7 @@ async def vision_claude(image_media_type, base64_string):
         }
     ]
 
-    completion = await get_completion(client, max_tokens, messages, MODEL_OPUS)
+    completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
 
     return completion
 
@@ -120,14 +120,14 @@ async def documents_claude(document_media_type, base64_string):
         }
     ]
 
-    completion = await get_completion(client, max_tokens, messages, MODEL_SONNET)
+    completion = await get_completion_claude(client, max_tokens, messages, MODEL_SONNET)
 
     return completion
 
 
 async def text_claude(prompt, text):
     return text
-    client = get_client()
+    client = get_client_claude()
 
     max_tokens = 1024
 
@@ -137,7 +137,7 @@ async def text_claude(prompt, text):
         {"role": "user", "content": "Respuesta en formato de markdown."}
     ]
 
-    completion = await get_completion(client, max_tokens, messages, MODEL_OPUS)
+    completion = await get_completion_claude(client, max_tokens, messages, MODEL_OPUS)
 
     return completion
 
@@ -152,7 +152,7 @@ async def text_claude(prompt, text):
 #     .text
 # )
 
-async def get_completion(client, max_tokens, messages, model_name):
+async def get_completion_claude(client, max_tokens, messages, model_name):
     res = await asyncio.to_thread(
         client.messages.create,
         model=model_name,
@@ -161,3 +161,7 @@ async def get_completion(client, max_tokens, messages, model_name):
     )
     print(res)
     return res.content[0].text
+
+
+def get_completion_stream_claude(client, max_tokens, messages, model_name):
+    return client.messages.stream(model=model_name, max_tokens=100, messages=messages)

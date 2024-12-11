@@ -2,12 +2,12 @@ import pyttsx3
 from PyQt6.QtCore import QThread, pyqtSignal
 from package.ui.dialogs.toast_manager import toasts
 
-
+'''
 class TTSThread(QThread):
     finished = pyqtSignal()
     error = pyqtSignal(str)
 
-    def __init__(self, text):
+    def __init__(self, text=None):
         super().__init__()
         self.text = text
         self.engine = pyttsx3.init()
@@ -30,6 +30,10 @@ class TTSThread(QThread):
     def run(self):
         try:
             if self.engine is None:
+                return
+
+            print("tts:", self.text)
+            if self.text is None:
                 return
 
             self.engine.connect("started-word", self.check_stop)
@@ -72,6 +76,100 @@ class TTSThread(QThread):
             self.engine = None
         except Exception as e:
             self.error.emit(str(e))
+
+'''
+
+
+class TTSThread(QThread):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+    stop_requested = pyqtSignal()  # Señal para detener el TTS
+
+    def __init__(self, text=None):
+        super().__init__()
+        self.text = text
+        self.engine = None
+        self.stop_req = False  # Variable de control para detener el TTS
+        self.stop_requested.connect(self.stop)  # Conectar la señal stop_requested al método stop
+
+        # Inicialización del motor TTS
+        self._initialize_engine()
+
+    def _initialize_engine(self):
+        """Inicializa el motor TTS (Pyttsx3)"""
+        self.engine = pyttsx3.init()
+        voices = self.engine.getProperty("voices")
+        rate = self.engine.getProperty("rate")
+
+        voice = voices[2].id if len(voices) > 2 else voices[1].id
+        self.engine.setProperty("voice", voice)
+        self.engine.setProperty("rate", rate - 20)
+
+    def run(self):
+        """Método que ejecuta el motor TTS"""
+        try:
+            if self.engine is None:
+                print("Error: el motor TTS no se ha inicializado correctamente.")
+                return
+
+            # Verificar si el texto se ha asignado correctamente
+            if not self.text:
+                print("Error: no hay texto para leer.")
+                return
+
+            # Imprimir el texto antes de iniciar el TTS
+            print("Iniciando TTS con el texto:", self.text)
+
+            # Conectar para escuchar la palabra que empieza a ser pronunciada
+            self.engine.connect("started-word", self.check_stop)
+
+            # Pronunciar el texto
+            print("TTS:", self.text)  # Depuración adicional
+            self.engine.say(self.text)
+            self.engine.runAndWait()
+
+            if self.engine._inLoop:
+                self.engine.endLoop()
+
+        except RuntimeError as re:
+            self.error.emit(str("Ya se encuentra en ejecución una ventana."))
+
+        except Exception as e:
+            self.error.emit(str(e))
+
+        finally:
+            self.cleanup()
+            self.finished.emit()
+
+    def stop(self):
+        """Método para detener el TTS"""
+        self.stop_req = True
+        try:
+            if self.engine is None:
+                return
+            self.engine.stop()
+        except Exception as e:
+            self.error.emit(str(e))
+
+    def check_stop(self, *args):
+        """Verifica si se debe detener el TTS"""
+        if self.stop_req and self.engine is not None:
+            self.engine.stop()
+
+    def cleanup(self):
+        """Libera recursos del motor TTS"""
+        try:
+            if self.engine:
+                self.engine.stop()
+            del self.engine
+            self.engine = None
+        except Exception as e:
+            self.error.emit(str(e))
+
+    def restart_engine(self):
+        """Reinicia el motor TTS para la próxima palabra"""
+        self.cleanup()
+        self._initialize_engine()
 
 
 def text_to_file_audio(content, output_file):

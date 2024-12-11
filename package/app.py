@@ -351,9 +351,9 @@ class MainWindow(QWidget):
         ss = take_ss()
         self.show()  # Open widget after take_ss
 
-        text = await handle_req_screenshot(ss)
+        # text = await handle_req_screenshot(ss)
 
-        self.handle_speech(text)
+        self.handle_speech({"fn": handle_req_screenshot, "param": ss})
         # self.handle_windows(Window.SPEECH)
 
     # handle_speech => para manejo del tts global, ya que todas las ventanas y funciones podrían tener acceso a este método
